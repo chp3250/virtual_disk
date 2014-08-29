@@ -75,12 +75,18 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CVirtualDisk.h" />
+    <ClInclude Include="CVirtualDiskMng.h" />
+    <ClInclude Include="file_dir_base.h" />
     <ClInclude Include="mylist.h" />
     <ClInclude Include="mystring.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CVirtualDisk.cpp" />
+    <ClCompile Include="CVirtualDiskMng.cpp" />
+    <ClCompile Include="file_dir_base.cpp" />
     <ClCompile Include="mystring.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

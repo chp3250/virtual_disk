@@ -30,6 +30,15 @@
     <ClInclude Include="mylist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="file_dir_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CVirtualDisk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CVirtualDiskMng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -39,6 +48,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mystring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="file_dir_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVirtualDisk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVirtualDiskMng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

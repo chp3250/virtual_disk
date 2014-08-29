@@ -5,10 +5,16 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+
+// for test
 #include "mystring.h"
 #include "mylist.h"
+#include "CVirtualDiskMng.h"
+// end test
 
 #define MAX_INPUT 1024
+
+CVirtualDiskMng CTmp;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -19,6 +25,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	int nFinish = 0;
 
 
+
+
 	printf("C:\\>");
 
 	while(nFinish != 1)
@@ -27,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		memset(szTmp, 0, sizeof(szTmp));
 
 		//scanf_s("%s", szTmp);
-		fgets(szTmp, MAX_INPUT, stdin);
+		fgets(szTmp, MAX_INPUT-1, stdin);
 
 		nFinish = nTmp;
 
@@ -85,6 +93,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	printf("list test : %d \n", *(tmp->Next->Next->Value));
 
+
+	fgets(szTmp, MAX_INPUT- 1, stdin);
+
+	CMyString sztmp4 = szTmp;
+
+	CTmp.CoverToAbsolutePath(sztmp4);
 
 	system("pause");
 

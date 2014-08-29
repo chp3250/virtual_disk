@@ -26,6 +26,7 @@ public:
 	bool del(T& Value);
 	SNode<T>* search(T& Value);
 	SNode<T>* get_head() {return m_Head;}
+	bool empty();
 
 
 private:
@@ -182,6 +183,15 @@ SNode<T>* CMyList<T>::search(T& Value)
 			return it;		
 		}
 	}
+}
+
+template<class T>
+bool CMyList<T>::empty()
+{
+	if (m_Head == NULL)
+		return true;
+
+	return false;
 }
 
 #endif
