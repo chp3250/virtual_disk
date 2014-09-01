@@ -21,6 +21,7 @@ public:
 	CMyString operator =(CMyString& Str);
 	
 	const char* GetBuf() {return m_Buf;}
+	int Length() { return strlen(m_Buf); };
 
 private:
 	int AllockBuf(char* Str, bool bAdd = false/*是加到字符串尾部，还是覆盖*/);				// 抽出来的字符串构造主体语句

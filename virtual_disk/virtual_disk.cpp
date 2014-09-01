@@ -23,8 +23,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	char szTmp[MAX_INPUT];
 
 	int nFinish = 0;
-
-
+	char* p1 = NULL;
+	char* p2 = NULL;
 
 
 	printf("C:\\>");
@@ -49,56 +49,73 @@ int _tmain(int argc, _TCHAR* argv[])
 			break;
 		}
 
-		
+		// for test
+		printf("p1 == 0x%x, szTmp == 0x%x\n", p1, szTmp);
+
+		p1 = strtok_s(szTmp, " \0", &p2);
+		printf("p1 == 0x%x, szTmp == 0x%x\n", p1, szTmp);
+		if(!strcmp(p1, "mkdir"))
+		{
+			CTmp.CreateDir(p2);
+		}
+		else if(!strcmp(p1, "dir"))
+		{
+			CTmp.ListDir(p2);
+		}
+
+		// end test
 	}
 
 
 
-	CMyString szTmp2 = "123";
+	//CMyString szTmp2 = "123";
 
-	printf("输入是：%s \n", szTmp2.GetBuf());
+	//printf("输入是：%s \n", szTmp2.GetBuf());
 
-	szTmp2 += "adsf";
+	//szTmp2 += "adsf";
 
-	CMyString szTmp3 = "rrrrrrrrrrrrrrrrrrrrrr";
-	szTmp2 += szTmp3;
+	//CMyString szTmp3 = "rrrrrrrrrrrrrrrrrrrrrr";
+	//szTmp2 += szTmp3;
 
-	szTmp2 += szTmp3;
+	//szTmp2 += szTmp3;
 
-	szTmp2 += szTmp3;
+	//szTmp2 += szTmp3;
 
-	szTmp2 += szTmp3;
+	//szTmp2 += szTmp3;
 
-	szTmp2 = szTmp3;
+	//szTmp2 = szTmp3;
 
-	printf("输入是：%s \n", szTmp2.GetBuf());
+	//printf("输入是：%s \n", szTmp2.GetBuf());
 
 
 	// test list
 
-	CMyList<int> list;
-	nTmp = 1;
-	list.tail_insert(nTmp);
-	nTmp = 2;
-	list.tail_insert(nTmp);
-	nTmp = 3;
-	list.tail_insert(nTmp);
+	//CMyList<int> list;
+	//nTmp = 1;
+	//list.tail_insert(nTmp);
+	//nTmp = 2;
+	//list.tail_insert(nTmp);
+	//nTmp = 3;
+	//list.tail_insert(nTmp);
 
-	SNode<int> *tmp;
-	tmp = list.get_head();
+	//SNode<int> *tmp;
+	//tmp = list.get_head();
 
-	printf("list test : %d \n", *(tmp->Value));
+	//printf("list test : %d \n", *(tmp->Value));
 
-	printf("list test : %d \n", *(tmp->Next->Value));
+	//printf("list test : %d \n", *(tmp->Next->Value));
 
-	printf("list test : %d \n", *(tmp->Next->Next->Value));
+	//printf("list test : %d \n", *(tmp->Next->Next->Value));
 
 
-	fgets(szTmp, MAX_INPUT- 1, stdin);
+	//fgets(szTmp, MAX_INPUT- 1, stdin);
 
-	CMyString sztmp4 = szTmp;
+	//CMyString sztmp4 = szTmp;
 
-	CTmp.CoverToAbsolutePath(sztmp4);
+	////CTmp.CoverToAbsolutePath(sztmp4);
+
+	//CTmp.CreateDir(szTmp);
+	//CTmp.ListDir(szTmp);
 
 	system("pause");
 

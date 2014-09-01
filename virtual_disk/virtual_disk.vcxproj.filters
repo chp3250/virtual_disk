@@ -39,6 +39,9 @@
     <ClInclude Include="CVirtualDiskMng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inline_func.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

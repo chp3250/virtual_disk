@@ -4,8 +4,8 @@
 template<class T>
 struct SNode
 {
-	SNode* Pre;
-	SNode* Next;
+	SNode<T>* Pre;
+	SNode<T>* Next;
 
 	T* Value;
 
@@ -25,7 +25,8 @@ public:
 
 	bool del(T& Value);
 	SNode<T>* search(T& Value);
-	SNode<T>* get_head() {return m_Head;}
+	SNode<T>* get_head() { return m_Head; }
+	SNode<T>* next(SNode<T>* Cur) { return Cur->Next; }
 	bool empty();
 
 
@@ -67,8 +68,10 @@ CMyList<T>::~CMyList()
 template<class T>
 SNode<T>* CMyList<T>::create_node(T& Value)
 {
-	T* NewValue = new T();
-	*NewValue = Value;
+	//T* NewValue = new T();
+	//*NewValue = Value;
+
+	T* NewValue = &Value;
 
 	SNode<T>* NewNode = new SNode<T>();
 	NewNode->Next = NULL;

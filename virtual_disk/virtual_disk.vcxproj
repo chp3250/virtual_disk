@@ -78,6 +78,7 @@
     <ClInclude Include="CVirtualDisk.h" />
     <ClInclude Include="CVirtualDiskMng.h" />
     <ClInclude Include="file_dir_base.h" />
+    <ClInclude Include="inline_func.h" />
     <ClInclude Include="mylist.h" />
     <ClInclude Include="mystring.h" />
     <ClInclude Include="stdafx.h" />

@@ -18,14 +18,14 @@ public:
 	~CVirtualDiskMng();
 
 
-	int CreateDir(char szName[], char Path[]);						// 创建目录
+	int CreateDir(char Path[]);						// 创建目录
 	int CreateFile(char szName[], char Path[], int nSize);			// 创建文件
 
-	int ListDir(char Path[], bool bRecursion /*是否递归列出所有*/= false);
+	int ListDir(char Path[], bool bRecursion /*是否递归列出所有d*/= false);
 
 	int ChangeDir(char Path[]);										// 改变当前目录
 
-	ITreeNode* GetNode(CMyString& Path);
+	ITreeNode* GetNode(CMyString& Path, bool bCreate /*是否是创建文件或目录*/ = false);
 
 	int ResolvePath(char Path[], char* szNames[]);					// 解析路径
 
