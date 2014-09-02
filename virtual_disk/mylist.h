@@ -28,7 +28,7 @@ public:
 	SNode<T>* get_head() { return m_Head; }
 	SNode<T>* next(SNode<T>* Cur) { return Cur->Next; }
 	bool empty();
-
+	void clear();
 
 private:
 	SNode<T>* create_node(T& Value);
@@ -63,6 +63,8 @@ CMyList<T>::~CMyList()
 			delete it->Pre;
 		}
 	}
+
+	m_Head = NULL;
 }
 
 template<class T>
@@ -195,6 +197,27 @@ bool CMyList<T>::empty()
 		return true;
 
 	return false;
+}
+
+template<class T>
+void CMyList<T>::clear()
+{
+	SNode<T> *it = NULL;
+	it = m_Head;
+
+	for(it; it!=NULL; it = it->Next)
+	{
+		if(it->Value != NULL)
+		{
+			delete it->Value;
+			it->Value = NULL;
+		}
+
+		if(it->Pre != NULL)
+		{
+			delete it->Pre;
+		}
+	}
 }
 
 #endif

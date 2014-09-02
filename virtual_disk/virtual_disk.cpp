@@ -25,12 +25,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	int nFinish = 0;
 	char* p1 = NULL;
 	char* p2 = NULL;
-
-
-	printf("C:\\>");
+	char* p3 = NULL;
 
 	while(nFinish != 1)
 	{
+
+		CTmp.PrintCurPath();
 
 		memset(szTmp, 0, sizeof(szTmp));
 
@@ -50,17 +50,51 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 		// for test
-		printf("p1 == 0x%x, szTmp == 0x%x\n", p1, szTmp);
-
 		p1 = strtok_s(szTmp, " \0", &p2);
-		printf("p1 == 0x%x, szTmp == 0x%x\n", p1, szTmp);
+
 		if(!strcmp(p1, "mkdir"))
 		{
 			CTmp.CreateDir(p2);
 		}
 		else if(!strcmp(p1, "dir"))
 		{
-			CTmp.ListDir(p2);
+			p1 = strtok_s(NULL, " \0", &p2);
+			if(NULL == p1)
+			{
+				CTmp.ListDir(NULL);
+				continue;
+			}
+
+			if(!strcmp(p1, "/ad")) // 只列出子目录
+			{
+				CTmp.ListDir(p2, 1);
+			}
+			else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
+			{
+				CTmp.ListDir(p2, 2);
+			}
+			else
+			{
+				CTmp.ListDir(p1);
+			}
+
+		}
+		else if(!strcmp(p1, "cd"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			if(NULL == p1)
+			{
+				CTmp.PrintCurPath(false);
+			}
+			else
+			{
+				CTmp.ChangeDir(p1);
+			}
+		}
+		else if(!strcmp(p1, "copy"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			CTmp.CopyFiles(p1, p2);
 		}
 
 		// end test

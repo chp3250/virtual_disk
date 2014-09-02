@@ -2,7 +2,10 @@
 #include "CVirtualDiskMng.h"
 #include "mystring.h"
 #include "mylist.h"
-
+#include "inline_func.h"
+#include "io.h"
+#include "windows.h"
+#include "stdio.h"
 
 CVirtualDiskMng::CVirtualDiskMng()
 {
@@ -10,6 +13,10 @@ CVirtualDiskMng::CVirtualDiskMng()
 
 	m_RootDir.m_eType = EFT_DIR;
 	strcpy_s(m_RootDir.m_szName, "根目录");
+	SYSTEMTIME time;
+	CoverTimeToUInt(time, m_RootDir.m_dwDate, m_RootDir.m_dwTime);
+	m_RootDir.m_Parent = NULL;
+
 }
 
 CVirtualDiskMng::~CVirtualDiskMng()
@@ -80,17 +87,21 @@ int CVirtualDiskMng::CreateDir(char Path[])
 
 int CVirtualDiskMng::CreateFile(char szName[], char Path[], int nSize)
 {
+
+
 	return 0;
 }
 
-int CVirtualDiskMng::ListDir(char Path[], bool bRecursion /*是否递归列出所有d*/)
-{
-	if(Path == NULL)
-	{
-		return -1;
-	}
 
+// FIXME: 遍历仅能遍历第一层
+int CVirtualDiskMng::ListDir(char Path[], int nType)
+{
 	CMyString szTmp = Path;
+
+	if(Path == NULL) // 为NULL的话列出当前
+	{
+		szTmp = m_CurDir;
+	}
 	
 	ITreeNode *Node = GetNode(szTmp);
 	if(NULL == Node)
@@ -100,28 +111,45 @@ int CVirtualDiskMng::ListDir(char Path[], bool bRecursion /*是否递归列出所有d*/)
 	}
 
 	// for test
-	SNode<ITreeNode>* t = Node->GetNodes()->get_head(), *f = NULL;
+	SNode<ITreeNode>* t = Node->GetNodes()->get_head(), *f = NULL, *k = NULL;
+	CMyString szTmp1 = szTmp;
+	szTmp1 += "\\";
+	szTmp1 += Node->m_szName;
+	printf("%s 的目录\n", szTmp1);
+
 	Node->Print(1);
 	Node->Print(2);
-	if (bRecursion)
-	{
-		for(t; t!=NULL; t = (t->Value)->GetNodes()->get_head())
-		{
-			f = t;
-			for (t; t!= NULL; t = t->Next)
-			{
-				/*printf("test dir == %s\n", t->Value->m_szName);*/
-				t->Value->Print();
-			}
-			t = f;
-		}
-	}
-	else
+
+	if(nType == 0)
 	{
 		for (t; t!= NULL; t = t->Next)
 		{
-			//printf("test dir == %s\n", t->Value->m_szName);
 			t->Value->Print();
+		}
+	}
+	else if(nType == 1)
+	{
+		for (t; t!= NULL; t = t->Next)
+		{
+			if(t->Value->m_eType == EFT_DIR)
+				t->Value->Print();
+		}
+	}
+	else if(nType == 2)
+	{
+
+		for(t; t!=NULL; t = (t->Value)->GetNodes()->get_head())
+		{
+			f = t;
+
+			// 横向打印
+
+				for (t; t!= NULL; t = t->Next)
+				{
+					t->Value->Print();
+				}
+
+			t = f;
 		}
 	}
 	// end test
@@ -131,6 +159,179 @@ int CVirtualDiskMng::ListDir(char Path[], bool bRecursion /*是否递归列出所有d*/)
 
 int CVirtualDiskMng::ChangeDir(char Path[])
 {
+	if(NULL == Path)
+	{
+		return -1;
+	}
+
+	CMyString szTmp1 = Path;
+
+	CoverToAbsolutePath(szTmp1);
+	if(!strcmp(szTmp1.GetBuf(), INIT_CUR_PATH))
+	{
+		m_CurDir = INIT_CUR_PATH;
+		return 0;
+	}
+
+	CMyString szTmp2 = szTmp1;
+
+	ITreeNode* Node = GetNode(szTmp2);
+	if(NULL == Node)
+	{
+		printf("系统找不到指定的路径。\n");
+		return -1;
+	}
+
+	if(Node->m_eType == EFT_FILE)
+	{
+		printf("目录名称无效。\n");
+		return -1;
+	}
+
+
+
+	m_CurDir = szTmp1;
+
+	//PrintCurPath(false);
+
+	return 0;
+}
+
+// FIXME: 资源释放未完成
+int CVirtualDiskMng::RmDir(char Path[], int nType)
+{
+	CMyString szTmp = Path;
+
+	if(Path == NULL)			// 删除当前路径
+	{
+		szTmp = m_CurDir;
+		ChangeDir("..");
+	}
+
+	ITreeNode* Node = GetNode(szTmp);
+	if(NULL == Node)
+	{
+		printf("系统找不到指定的路径。\n");
+		return -1;
+	}
+
+	if(Node->m_eType == EFT_FILE)
+	{
+		printf("目标是文件。\n");
+		return -1;
+	}
+
+	if(nType == 0)
+	{
+		if(NULL != Node->GetNodes())
+		{
+			printf("目录不是空的。\n");
+			return -1;
+		}
+
+		Node->GetNodes()->clear();
+	}
+	else
+	{
+		char c = '0';
+		c = getchar();
+		if(c == 'N' || c == 'n')
+		{
+			return -1;
+		}
+		else if(c == 'Y' || c == 'y')
+		{
+
+		}
+
+	}
+
+	return 0;
+}
+
+
+static int JudgePath(char Path[])
+{
+	if(NULL == Path)
+	{
+		return -1;
+	}
+
+	char* p1 = NULL;
+	char* p2 = NULL;
+	char* p3 = NULL;
+
+	p1 = strtok_s(Path, "*?", &p2);
+
+	if (p1 == NULL)
+	{
+		return 0;
+	}
+	
+	p1 = strtok_s(NULL, "*?", &p2);
+	if(p1 != NULL)
+	{
+		return -1;
+	}
+
+	return 0;
+}
+int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
+{
+	char szPath_Tmp[MAX_PATH] = {0};
+
+	if(NULL == Path1 || NULL == Path2)
+	{
+		printf("命令语法不正确。\n");
+
+		return -1;
+	}
+
+	CMyString szTmp = Path2;
+	ITreeNode* Node = GetNode(szTmp);
+	if(NULL == Node)
+	{
+		printf("系统找不到指定的路径。\n");
+		return -1;
+	}
+
+	WIN32_FIND_DATA Find_Data;
+	HANDLE h_File = FindFirstFile(Path1, &Find_Data);
+	char* p1 = NULL, *p2 = NULL;
+	p1 = strtok_s(Path1, "?*", &p2);
+	if(h_File == (HANDLE)0xffffffff)
+	{
+		printf("文件名或目录名不正确。\n");
+		return -1;
+	}
+	do 
+	{
+		if( (Find_Data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
+		{
+			
+		}
+		else		// 文件
+		{
+
+			sprintf_s(szPath_Tmp, "%s%s\n", p1, Find_Data.cFileName);
+			CMyString szTmp1 = p1;
+			szTmp1 += Find_Data.cFileName;
+			FILE* fp = NULL;
+			errno_t Ret_t = fopen_s(*fp, szTmp1.GetBuf(), "rb");
+			if(Ret_t != 0)
+			{
+				printf("不可预料的错误...\n");
+				return -1;
+			}
+			else
+			{
+				while(read(,))
+			}
+		}
+
+	}while(FindNextFile(h_File, &Find_Data));
+		
+
 	return 0;
 }
 
@@ -140,7 +341,7 @@ ITreeNode* CVirtualDiskMng::GetNode(CMyString &Path, bool bCreate)
 
 	CoverToAbsolutePath(Path);
 
-	printf("%s\n", Path.GetBuf());
+	//printf("%s\n", Path.GetBuf());
 
 	const char* p = Path.GetBuf();
 	int nLength = Path.Length();
@@ -215,12 +416,6 @@ ITreeNode* CVirtualDiskMng::GetNode(CMyString &Path, bool bCreate)
 			if(bCreate)
 			{
 				CMyString szTmp = "\\";
-				//while( p1 != NULL)
-				//{
-				//	szTmp += p1; 
-				//	szTmp += "\\";
-				//	p1 = strtok_s(NULL, "\\", &p2);			
-				//}
 				szTmp += p1;
 				szTmp += "\\";
 				szTmp += p2;
@@ -265,7 +460,7 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 
 	for(int i=0; p1 != NULL; i++)
 	{
-		printf("%d:%s\n", i, p1);
+		//printf("%d:%s\n", i, p1);
 
 		szTmp += "\\";
 
@@ -274,59 +469,67 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 		p1 = strtok_s(NULL, ":.\\", &p2);
 	}
 
-	printf("%s\n", szTmp.GetBuf());
+	//printf("%s\n", szTmp.GetBuf());
 
 	// 判断是否绝对路径
 	// 1, 不带盘符标识的
-	if(*p == '\\')
-	{
-		Path = szTmp;
-
-		return Path;
-	}
-
 	// 2, 带盘符标识的
-	if( NULL != p3 && (*(p3+1) == '\\') )			// 本身就是绝对路径
+	if(  (*p == '\\') 
+		|| (NULL != p3 && (*(p3+1) == '\\')) )			// 本身就是绝对路径
 	{
-		Path = szTmp;
-					
+		Path = INIT_CUR_PATH;
+
+		if(szTmp.Length() == 0)
+		{
+			
+		}
+		else
+		{
+			char* p4 = const_cast<char *>(Path.GetBuf());
+			*(p4+strlen(p4)-1) = '\0';
+
+			Path += szTmp;
+		}			
 		return Path;
 	}
 
 	// 拼出相对路径前的串
 	// 1, 是 '..'的
-	if(NULL != strstr(p, ".."))
 	{
 		nLength = m_CurDir.Length();
 		CMyString szTmp1 = m_CurDir;
-		const char* p4 = szTmp1.GetBuf();
+		char* p4 = const_cast<char *>(szTmp1.GetBuf());
+		char* p5 = const_cast<char *>(p);
 
 		if(*(p4+nLength-1) == '\\')
 		{
-			*(const_cast<char *>(p4+nLength-1)) = '\0';
+			*(p4+nLength-1) = '\0';
 		}
-		for(int i = nLength-1; i>=0; i--)
+
+		while( NULL != (p5 = strstr(p5, "..")))
 		{
-			if(*(p4+i) == '\\')
+			for(int i = nLength-1; i>=3; i--)
 			{
-				break;
+				if(*(p4+i) == '\\')
+				{
+					*(p4+i) = '\0';				// 清除路径尾部的"\"
+					nLength = i;
+					break;
+				}
+				else
+				{
+					*(p4+i) = '\0';
+				}
 			}
-			else
-			{
-				*(const_cast<char *>(p4+i)) = '\0';
-			}
+
+			p5 += 2;
 		}
 
 		Path = szTmp1;
 		Path += szTmp;
 	}
-	else
-	{
-		Path = m_CurDir;
-		Path += szTmp;
-	}
 
-	printf("%s\n", Path.GetBuf());
+	//printf("%s\n", Path.GetBuf());
 
 	return Path;
 }

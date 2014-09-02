@@ -12,7 +12,7 @@
 #include "windows.h"
 #include "winbase.h"
 
-void CoverTimeToUInt(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
+inline void CoverTimeToUInt(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
 {
 	dwDate = time.wYear *10000 + time.wMonth * 100 + time.wDay;
 
@@ -27,7 +27,7 @@ void CoverTimeToUInt(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
 /* @Para dwTime 存储需要转换的时间                                                                     
 /************************************************************************/
 
-void CoverUIntToTime(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
+inline void CoverUIntToTime(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
 {
 	time.wYear = (WORD)(dwDate / 10000);
 	time.wMonth = (WORD)((dwDate % 10000) / 100);

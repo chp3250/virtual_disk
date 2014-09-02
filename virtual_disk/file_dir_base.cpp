@@ -85,6 +85,38 @@ void CDirectoryNode::Print(int nType)
 	}
 }
 
+int CDirectoryNode::RecursionPrint()
+{
+	//if(RecursionPrint() == 1)
+	//ITreeNode *Node = m_Nodes.get_head()
+
+	if(m_Nodes.get_head() == NULL)
+	{
+		return 1;
+	}
+	else
+	{
+		SNode<ITreeNode> *Node_t = m_Nodes.get_head();
+		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
+		{
+			Print(1);
+			if(m_Parent != NULL)
+			{
+				m_Parent->Print(2);
+			}
+			else
+			{
+				
+			}
+
+			Node_t->Value->Print(0);
+
+			Node_t->Value->RecursionPrint();
+		}
+	}
+
+	return 0;
+}
 
 CFileNode::CFileNode()
 {

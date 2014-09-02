@@ -39,6 +39,7 @@ public:
 	/* @Para nType		1, 是自己打印自己 2, 是子目录打印自己 3，父目录打印自己 
 	/************************************************************************/
 	virtual void Print(int nType = 0) = 0;								// 打印节点信息
+	virtual int RecursionPrint() = 0;									// 递归打印
 
 public:
 	ENUM_FILE_TYPE m_eType;		    // 树节点类型
@@ -80,6 +81,7 @@ public:
 	virtual CMyList<ITreeNode>* GetNodes() { return &m_Nodes; }
 
 	virtual void Print(int nType = 0);
+	virtual int RecursionPrint();		
 
 
 	bool EmptyDir()
@@ -107,6 +109,7 @@ public:
 	virtual int InsertTree(ITreeNode* Node) { return 0; }
 	virtual CMyList<ITreeNode>* GetNodes() { return NULL; }
 	virtual void Print(int nType = 0);
+	virtual int RecursionPrint() { return 0; };
 
 private:
 	int m_nSize;	// 文件大小
