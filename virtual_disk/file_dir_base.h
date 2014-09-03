@@ -13,7 +13,7 @@
 
 #define MAX_PATH 260
 //typedef unsigned int DWORD;
-
+class CMyString;
 enum ENUM_FILE_TYPE
 {
 	EFT_START = 0, 
@@ -39,7 +39,38 @@ public:
 	/* @Para nType		1, 是自己打印自己 2, 是子目录打印自己 3，父目录打印自己 
 	/************************************************************************/
 	virtual void Print(int nType = 0) = 0;								// 打印节点信息
-	virtual int RecursionPrint() = 0;									// 递归打印
+	virtual int RecursionPrint(CMyString& szTmp) = 0;									// 递归打印
+
+
+	/************************************************************************/
+	/*  @Func Release
+	/*				 释放资源
+	/*	@Para nType		0 都释放
+	/*					1 只释放文件
+	/*					2 只释放目录
+	/************************************************************************/
+	virtual void Release(int nType = 0) = 0;											// 释放
+
+	/************************************************************************/
+	/*  @Func ChangeData()		
+	/*					改变数据
+	/*	@Para dwDate	日期
+	/*	@Para dwTime	时间
+	/*	@Para Parent  父节点地址
+	/*	@Para nPos		文件会有磁盘位置
+	/*	@Para nSize		文件大小
+	/************************************************************************/
+	virtual void ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0) = 0;
+
+	/************************************************************************/
+	/*	@Func UpdatePos
+	/*				当有文件删除时，更新本文件位置信息
+	/*	@Para	nPos			与本文件pos做对比若小与则更新
+	/*	@Para	nSize			更新的大小
+	/************************************************************************/
+	virtual void UpdatePos(int nPos, int nSize) = 0;
+
+	virtual bool operator== (ITreeNode& Node);
 
 public:
 	ENUM_FILE_TYPE m_eType;		    // 树节点类型
@@ -81,8 +112,13 @@ public:
 	virtual CMyList<ITreeNode>* GetNodes() { return &m_Nodes; }
 
 	virtual void Print(int nType = 0);
-	virtual int RecursionPrint();		
+	virtual int RecursionPrint(CMyString& szTmp);		
 
+	virtual void Release(int nType = 0);											// 释放
+
+	virtual void ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0);
+
+	virtual void UpdatePos(int nPos, int nSize);
 
 	bool EmptyDir()
 	{
@@ -109,9 +145,15 @@ public:
 	virtual int InsertTree(ITreeNode* Node) { return 0; }
 	virtual CMyList<ITreeNode>* GetNodes() { return NULL; }
 	virtual void Print(int nType = 0);
-	virtual int RecursionPrint() { return 0; };
+	virtual int RecursionPrint(CMyString& szTmp);
 
-private:
+	virtual void Release(int nType = 0);											// 释放
+
+	virtual void ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0);
+
+	virtual void UpdatePos(int nPos, int nSize);
+
+public:
 	int m_nSize;	// 文件大小
 	int m_nPlace;	// 文件在磁盘中的位置(相对于申请空间首地址偏移量)
 

@@ -8,7 +8,6 @@ struct SNode
 	SNode<T>* Next;
 
 	T* Value;
-
 };
 
 template<class T>
@@ -47,24 +46,30 @@ CMyList<T>::CMyList()
 template<class T>
 CMyList<T>::~CMyList()
 {
-	SNode<T> *it = NULL;
-	it = m_Head;
+	//SNode<T> *it = NULL;
+	//it = m_Head;
 
-	for(it; it!=NULL; it = it->Next)
-	{
-		if(it->Value != NULL)
-		{
-			delete it->Value;
-			it->Value = NULL;
-		}
+	//for(it; it!=NULL; it = it->Next)
+	//{
+	//	if(it->Value != NULL)
+	//	{
+	//		//delete it->Value;
+	//		it->Value = NULL;
+	//	}
 
-		if(it->Pre != NULL)
-		{
-			delete it->Pre;
-		}
-	}
+	//	if(it->Pre != NULL)
+	//	{
+	//		it->Pre->Pre = NULL;
+	//		it->Pre->Value = NULL;
+	//		it->Pre->Next = NULL;
+	//		delete it->Pre;
+	//	}
+	//}
 
-	m_Head = NULL;
+	//m_Head->Next = NULL;
+	//m_Head->Value = NULL;
+	//m_Head->Pre = NULL;
+	//delete m_Head;
 }
 
 template<class T>
@@ -152,7 +157,7 @@ bool CMyList<T>::del(T& Value)
 	for(it; it != NULL; it=it->Next)
 	{
 		// == ×Ô¼ºÖØÔØ
-		if (Value == it->Value)
+		if (Value == *it->Value)
 		{
 			if(it->Pre)
 				it->Pre->Next = it->Next;
@@ -160,11 +165,20 @@ bool CMyList<T>::del(T& Value)
 			if(it->Next)
 				it->Next->Pre = it->Pre;
 
-			delete it->Value;
 			it->Value = NULL;
+			it->Next = NULL;
+			it->Pre = NULL;
 
 			delete it;
+
+			break;
 		}
+	}
+
+	if(it == m_Head)
+	{
+		it = NULL;
+		m_Head = NULL;
 	}
 
 	return true;
@@ -209,13 +223,14 @@ void CMyList<T>::clear()
 	{
 		if(it->Value != NULL)
 		{
-			delete it->Value;
+			//delete it->Value;
 			it->Value = NULL;
 		}
 
 		if(it->Pre != NULL)
 		{
 			delete it->Pre;
+			it->Pre = NULL;
 		}
 	}
 }

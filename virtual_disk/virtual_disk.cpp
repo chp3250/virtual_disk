@@ -96,6 +96,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			p1 = strtok_s(NULL, " \0", &p2);
 			CTmp.CopyFiles(p1, p2);
 		}
+		else if(!strcmp(p1, "rmdir"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			if(!strcmp(p1, "/s"))
+			{
+				CTmp.RmDir(p2, 1);
+			}
+			else
+			{
+				CTmp.RmDir(p1);
+			}
+		}
 
 		// end test
 	}

@@ -88,6 +88,7 @@
     <ClCompile Include="CVirtualDisk.cpp" />
     <ClCompile Include="CVirtualDiskMng.cpp" />
     <ClCompile Include="file_dir_base.cpp" />
+    <ClCompile Include="inline_func.cpp" />
     <ClCompile Include="mystring.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

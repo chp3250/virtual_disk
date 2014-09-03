@@ -1,11 +1,25 @@
 #include "stdafx.h"
 #include "file_dir_base.h"
 #include "inline_func.h"
+#include "mystring.h"
 
 ITreeNode::~ITreeNode()
 {
 	Clear();
+	//printf("release %s ", m_szName);
 };
+
+bool ITreeNode::operator== (ITreeNode& Node)
+{
+	if(strcmp(m_szName, Node.m_szName))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
 
 CDirectoryNode::CDirectoryNode()
 {
@@ -14,7 +28,7 @@ CDirectoryNode::CDirectoryNode()
 
 CDirectoryNode::~CDirectoryNode()
 {
-
+	m_Nodes.clear();
 }
 
 /*
@@ -85,37 +99,115 @@ void CDirectoryNode::Print(int nType)
 	}
 }
 
-int CDirectoryNode::RecursionPrint()
+int CDirectoryNode::RecursionPrint(CMyString& szTmp)
 {
-	//if(RecursionPrint() == 1)
-	//ITreeNode *Node = m_Nodes.get_head()
+	CMyString szTmp1 = szTmp;
+	szTmp1 += "\\";
+	szTmp1 += m_szName;
+
+	printf("%s 的目录。\n", szTmp1);
+	Print(1);
+	if(m_Parent != NULL)
+	{
+		m_Parent->Print(2);
+	}
+	else
+	{
+
+	}
 
 	if(m_Nodes.get_head() == NULL)
 	{
-		return 1;
+
+	}
+	else
+	{
+
+		SNode<ITreeNode> *Node_t = m_Nodes.get_head();
+		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
+		{
+			if( NULL == Node_t->Value)
+				continue;
+
+			Node_t->Value->Print(0);
+		}
+
+		Node_t = m_Nodes.get_head();
+		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
+		{
+			Node_t->Value->RecursionPrint(szTmp1);
+		}
+	}
+
+	return 0;
+}
+
+void CDirectoryNode::Release(int nType)
+{
+	if(nType == 1)
+		return;
+
+	if(m_Nodes.get_head() == NULL)
+	{
+		
 	}
 	else
 	{
 		SNode<ITreeNode> *Node_t = m_Nodes.get_head();
 		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
 		{
-			Print(1);
-			if(m_Parent != NULL)
-			{
-				m_Parent->Print(2);
-			}
-			else
-			{
-				
-			}
+			if(Node_t->Value == NULL)
+				continue;
 
-			Node_t->Value->Print(0);
-
-			Node_t->Value->RecursionPrint();
+			Node_t->Value->Release(nType);
 		}
 	}
 
-	return 0;
+
+	if(strcmp(m_szName, "\\"))
+	{
+		delete this;
+	}
+}
+
+void CDirectoryNode::ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0)
+{
+	if(dwDate != 0)
+	{
+		m_dwDate = dwDate;
+	}
+
+	if(dwTime != 0)
+	{
+		m_dwTime = dwTime;
+	}
+
+	if(Parent != NULL)
+	{
+		m_Parent = Parent;
+	}
+}
+
+void CDirectoryNode::UpdatePos(int nPos, int nSize)
+{
+
+	if(m_Nodes.get_head() == NULL)
+	{
+
+	}
+	else
+	{
+		SNode<ITreeNode> *Node_t = m_Nodes.get_head();
+		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
+		{
+			if(Node_t->Value == NULL)
+				continue;
+
+			Node_t->Value->UpdatePos(nPos, nSize);
+		}
+	}
+
+	return;
 }
 
 CFileNode::CFileNode()
@@ -170,7 +262,7 @@ ITreeNode* CFileNode::create(ENUM_FILE_TYPE eType, char szName[MAX_PATH], ITreeN
 
 	Node->m_nSize = nSize;
 
-	Node->m_nPlace = nCurPos + nSize;
+	Node->m_nPlace = nCurPos+1;
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
@@ -192,4 +284,63 @@ void CFileNode::Print(int nType)
 	printf("%9d ", m_nSize);
 
 	printf("%s\n", m_szName);
+}
+
+void CFileNode::Release(int nType)
+{
+	if(nType != 2)
+	{
+		delete this;
+	}
+}
+
+int CFileNode::RecursionPrint(CMyString& szTmp)
+{
+	//CMyString szTmp1 = szTmp;
+	//szTmp1 += "\\";
+	//szTmp1 += m_szName;
+
+	//printf("%s 的目录。\n", szTmp1.GetBuf());
+
+	return 0;
+}
+
+void CFileNode::ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0)
+{
+	if(dwDate != 0)
+	{
+		m_dwDate = dwDate;
+	}
+
+	if(dwTime != 0)
+	{
+		m_dwTime = dwTime;
+	}
+
+	if(Parent != NULL)
+	{
+		m_Parent = Parent;
+	}
+
+	if(nPos != 0)
+	{
+		m_nPlace = nPos;
+	}
+
+	if(nSize != 0)
+	{
+		m_nSize = nSize;
+	}
+}
+
+void CFileNode::UpdatePos(int nPos, int nSize)
+{
+	if(nPos >= m_nPlace)
+	{
+
+	}
+	else
+	{
+		m_nPlace -= nSize;
+	}
 }

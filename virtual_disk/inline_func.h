@@ -38,4 +38,40 @@ inline void CoverUIntToTime(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
 	time.wSecond = (WORD)(dwTime % 100);
 }
 
+/************************************************************************/
+/*	@Func GetPathFromStr
+/*					从字符串末尾非'\'字符起， 至'\'字符终止全部赋值为'\0'
+/*	@Para 待处理字符串
+/************************************************************************/
+inline void GetPathFromStr(char* Str)
+{
+	int nLength = strlen(Str);
+	bool bOk = false;
+	for(int i = nLength-1; i>=0; i--)
+	{
+		if(Str[i] == '\\')
+		{
+			if(bOk == false)
+			{
+				continue;
+			}
+			else
+			{
+				Str[i] = '\0';
+				break;
+			}
+		}
+
+		Str[i] = '\0';
+		bOk = true;
+	}
+}
+
+/************************************************************************/
+/*	@Func GetFileNameFromStr
+/*					取得从字符串末尾非'\'字符起， 至'\'字符终止的字符串
+/*	@Para 待处理字符串
+/************************************************************************/
+extern char* GetFileNameFromStr(char* D_Str, char* S_Str);
+
 #endif

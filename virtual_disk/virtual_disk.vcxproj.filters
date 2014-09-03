@@ -62,5 +62,8 @@
     <ClCompile Include="CVirtualDiskMng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="inline_func.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
