@@ -2,6 +2,9 @@
 #include "file_dir_base.h"
 #include "inline_func.h"
 #include "mystring.h"
+#include "CVirtualDiskMng.h"
+
+extern CVirtualDiskMng CTmp;
 
 ITreeNode::~ITreeNode()
 {
@@ -102,8 +105,11 @@ void CDirectoryNode::Print(int nType)
 int CDirectoryNode::RecursionPrint(CMyString& szTmp)
 {
 	CMyString szTmp1 = szTmp;
-	szTmp1 += "\\";
-	szTmp1 += m_szName;
+	if(m_szName[0] != '\\')
+	{
+		szTmp1 += "\\";
+		szTmp1 += m_szName;
+	}
 
 	printf("%s µÄÄ¿Â¼¡£\n", szTmp1);
 	Print(1);
@@ -168,9 +174,13 @@ void CDirectoryNode::Release(int nType)
 	{
 		delete this;
 	}
+	else
+	{
+		m_Nodes.clear();
+	}
 }
 
-void CDirectoryNode::ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0)
+void CDirectoryNode::ChangeData(DWORD dwDate, DWORD dwTime, ITreeNode* Parent, int nPos, int nSize)
 {
 	if(dwDate != 0)
 	{
@@ -204,6 +214,53 @@ void CDirectoryNode::UpdatePos(int nPos, int nSize)
 				continue;
 
 			Node_t->Value->UpdatePos(nPos, nSize);
+		}
+	}
+
+	return;
+}
+
+void CDirectoryNode::ReleaseChild(int nType, char* szBuff)
+{
+	if(m_Nodes.get_head() == NULL)
+	{
+
+	}
+	else
+	{
+		SNode<ITreeNode> *Node_t = m_Nodes.get_head(), *Node_Tmp = NULL;
+		for(Node_t; Node_t!=NULL; Node_t = Node_t == NULL? m_Nodes.get_head():Node_t->Next)
+		{
+			if(Node_t->Value == NULL)
+				continue;
+
+			if(nType == 0)
+			{
+
+			}
+			else
+			{
+				Node_t->Value->ReleaseChild(nType, szBuff);
+			}
+
+			if(Node_t->Value->m_eType != EFT_FILE)
+			{
+				continue;
+			}
+
+			if(NULL == szBuff || strstr(Node_t->Value->m_szName, szBuff))
+			{
+				//FIXME:
+				Node_Tmp = Node_t->Pre;
+				Node_t->Value->Release();
+				m_Nodes.erase(Node_t);
+				Node_t = Node_Tmp;
+
+			}
+			else
+			{
+				
+			}
 		}
 	}
 
@@ -262,7 +319,7 @@ ITreeNode* CFileNode::create(ENUM_FILE_TYPE eType, char szName[MAX_PATH], ITreeN
 
 	Node->m_nSize = nSize;
 
-	Node->m_nPlace = nCurPos+1;
+	Node->m_nPlace = nCurPos;
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
@@ -290,6 +347,10 @@ void CFileNode::Release(int nType)
 {
 	if(nType != 2)
 	{
+
+		CTmp.GetDisk()->DelFile(m_nPlace, m_nSize);
+		CTmp.NoticeAllFileToChangeData(m_nPlace, m_nSize);
+
 		delete this;
 	}
 }
@@ -305,7 +366,7 @@ int CFileNode::RecursionPrint(CMyString& szTmp)
 	return 0;
 }
 
-void CFileNode::ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0)
+void CFileNode::ChangeData(DWORD dwDate, DWORD dwTime, ITreeNode* Parent, int nPos, int nSize)
 {
 	if(dwDate != 0)
 	{

@@ -74,4 +74,12 @@ inline void GetPathFromStr(char* Str)
 /************************************************************************/
 extern char* GetFileNameFromStr(char* D_Str, char* S_Str);
 
+/************************************************************************/
+/*	@Func HaveSuffix()
+/*					判断是否有后缀
+/*	@Para Str		待处理字符串
+/*	@Return		char *  返回发下后缀的.的位置 =NULL则无后缀
+/************************************************************************/
+extern char* HaveSuffix(char* Str);
+
 #endif

@@ -51,6 +51,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		// for test
 		p1 = strtok_s(szTmp, " \0", &p2);
+		if(p1 == NULL)
+		{
+			continue;
+		}
 
 		if(!strcmp(p1, "mkdir"))
 		{
@@ -67,15 +71,39 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			if(!strcmp(p1, "/ad")) // 只列出子目录
 			{
-				CTmp.ListDir(p2, 1);
+
+				p1 = strtok_s(NULL, " \0", &p2);
+				CTmp.ListDir(p1, 1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if( NULL != p1) 
+						CTmp.ListDir(p1, 1);
+				}
 			}
 			else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
 			{
-				CTmp.ListDir(p2, 2);
+				p1 = strtok_s(NULL, " \0", &p2);
+				CTmp.ListDir(p1, 2);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if( NULL != p1) 
+						CTmp.ListDir(p1, 2);
+				}
 			}
 			else
 			{
 				CTmp.ListDir(p1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if( NULL != p1) 
+						CTmp.ListDir(p1);
+				}
 			}
 
 		}
@@ -94,74 +122,83 @@ int _tmain(int argc, _TCHAR* argv[])
 		else if(!strcmp(p1, "copy"))
 		{
 			p1 = strtok_s(NULL, " \0", &p2);
+			if(NULL ==p1 || NULL == p2)
+			{
+				continue;;
+			}
 			CTmp.CopyFiles(p1, p2);
 		}
 		else if(!strcmp(p1, "rmdir"))
 		{
 			p1 = strtok_s(NULL, " \0", &p2);
+			if(NULL ==p1)
+			{
+				continue;;
+			}
+
 			if(!strcmp(p1, "/s"))
 			{
-				CTmp.RmDir(p2, 1);
+				p1 = strtok_s(NULL, " \0", &p2);
+				CTmp.RmDir(p1, 1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if(NULL != p1)
+						CTmp.RmDir(p1, 1);
+				}
 			}
 			else
 			{
 				CTmp.RmDir(p1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if(NULL != p1)
+						CTmp.RmDir(p1);
+				}
+			}
+		}
+		else if(!strcmp(p1, "compare"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			CTmp.CompareFile(p1, p2);
+		}
+		else if(!strcmp(p1, "del"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			if(NULL ==p1)
+			{
+				continue;;
+			}
+			if(!strcmp(p1, "/s"))
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				CTmp.DelFiles(p1, 1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if(NULL != p1)
+						CTmp.DelFiles(p1, 1);
+				}
+			}
+			else
+			{
+				CTmp.DelFiles(p1);
+
+				while(p1 != NULL)
+				{
+					p1 = strtok_s(NULL, " \0", &p2);
+					if(NULL != p1)
+						CTmp.DelFiles(p1);
+				}
 			}
 		}
 
 		// end test
 	}
-
-
-
-	//CMyString szTmp2 = "123";
-
-	//printf("输入是：%s \n", szTmp2.GetBuf());
-
-	//szTmp2 += "adsf";
-
-	//CMyString szTmp3 = "rrrrrrrrrrrrrrrrrrrrrr";
-	//szTmp2 += szTmp3;
-
-	//szTmp2 += szTmp3;
-
-	//szTmp2 += szTmp3;
-
-	//szTmp2 += szTmp3;
-
-	//szTmp2 = szTmp3;
-
-	//printf("输入是：%s \n", szTmp2.GetBuf());
-
-
-	// test list
-
-	//CMyList<int> list;
-	//nTmp = 1;
-	//list.tail_insert(nTmp);
-	//nTmp = 2;
-	//list.tail_insert(nTmp);
-	//nTmp = 3;
-	//list.tail_insert(nTmp);
-
-	//SNode<int> *tmp;
-	//tmp = list.get_head();
-
-	//printf("list test : %d \n", *(tmp->Value));
-
-	//printf("list test : %d \n", *(tmp->Next->Value));
-
-	//printf("list test : %d \n", *(tmp->Next->Next->Value));
-
-
-	//fgets(szTmp, MAX_INPUT- 1, stdin);
-
-	//CMyString sztmp4 = szTmp;
-
-	////CTmp.CoverToAbsolutePath(sztmp4);
-
-	//CTmp.CreateDir(szTmp);
-	//CTmp.ListDir(szTmp);
 
 	system("pause");
 

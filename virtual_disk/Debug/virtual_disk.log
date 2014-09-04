@@ -1,9 +1,5 @@
-﻿Build started 2014/9/3 21:25:38.
-     1>Project "D:\Work\virtual_disk\virtual_disk\virtual_disk\virtual_disk.vcxproj" on node 2 (clean target(s)).
-     1>_PrepareForClean:
-         Deleting file "Debug\virtual_disk.lastbuildstate".
-     1>Done Building Project "D:\Work\virtual_disk\virtual_disk\virtual_disk\virtual_disk.vcxproj" (clean target(s)).
+﻿Build started 2014/9/4 19:42:31.
 
 Build succeeded.
 
-Time Elapsed 00:00:00.02
+Time Elapsed 00:00:00.00

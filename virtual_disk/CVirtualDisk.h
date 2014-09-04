@@ -1,6 +1,13 @@
 #ifndef __CVIRTUALDISK_H__
 #define __CVIRTUALDISK_H__
 
+/************************************************************************/
+/*	@File CVitualDisk.h
+/*					–Èƒ‚¥≈≈Ã¿‡
+/*	@auchor chenpan
+/*	@date 2014-9-1
+/************************************************************************/
+
 const int MAX_DISK_SIZE = 1024*1024*10;				// 10M ø’º‰
 
 enum ENUM_DISK_DATA_TYPE
@@ -17,6 +24,7 @@ public:
 		~CVirtualDisk();
 
 		int WriteTo(char* szBuff, int nSize);
+		int ReadFrom(char* szBuff, int nPos, int nSize);
 
 		/************************************************************************/
 		/*	@Func GetData

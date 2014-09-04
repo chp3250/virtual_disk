@@ -25,9 +25,11 @@ public:
 	bool del(T& Value);
 	SNode<T>* search(T& Value);
 	SNode<T>* get_head() { return m_Head; }
+	void set_head(SNode<T>* head) { m_Head = head;}
 	SNode<T>* next(SNode<T>* Cur) { return Cur->Next; }
 	bool empty();
 	void clear();
+	bool erase(SNode<T>* pNode);
 
 private:
 	SNode<T>* create_node(T& Value);
@@ -159,26 +161,9 @@ bool CMyList<T>::del(T& Value)
 		// == ×Ô¼ºÖØÔØ
 		if (Value == *it->Value)
 		{
-			if(it->Pre)
-				it->Pre->Next = it->Next;
-
-			if(it->Next)
-				it->Next->Pre = it->Pre;
-
-			it->Value = NULL;
-			it->Next = NULL;
-			it->Pre = NULL;
-
-			delete it;
-
+			erase(it);
 			break;
 		}
-	}
-
-	if(it == m_Head)
-	{
-		it = NULL;
-		m_Head = NULL;
 	}
 
 	return true;
@@ -219,20 +204,52 @@ void CMyList<T>::clear()
 	SNode<T> *it = NULL;
 	it = m_Head;
 
+	SNode<T>* tmp = NULL;
+
+	for(it; it!=NULL; it = tmp)
+	{
+		tmp = it->Next;
+		delete it;
+	}
+
+	m_Head = NULL;
+}
+
+template<class T>
+bool CMyList<T>::erase(SNode<T>* pNode)
+{
+	SNode<T> *it = NULL;
+	it = m_Head;
+
 	for(it; it!=NULL; it = it->Next)
 	{
-		if(it->Value != NULL)
+		if(it != pNode)
 		{
-			//delete it->Value;
-			it->Value = NULL;
+			continue;
 		}
 
 		if(it->Pre != NULL)
 		{
-			delete it->Pre;
-			it->Pre = NULL;
+			it->Pre->Next = it->Next;
+			if(it->Next != NULL)
+			{
+				it->Next->Pre = it->Pre;
+			}
 		}
+		else
+		{
+			m_Head = it->Next;
+			if( NULL != it->Next)
+			{
+				it->Next->Pre = NULL;
+			}
+		}
+
+		delete it;
+		break;
 	}
+
+	return true;
 }
 
 #endif

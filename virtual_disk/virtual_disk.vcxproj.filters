@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -42,6 +43,12 @@
     <ClInclude Include="inline_func.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="COrderPro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -63,6 +70,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="inline_func.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COrderPro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

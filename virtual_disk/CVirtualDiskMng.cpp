@@ -14,6 +14,7 @@ CVirtualDiskMng::CVirtualDiskMng()
 	m_RootDir.m_eType = EFT_DIR;
 	strcpy_s(m_RootDir.m_szName, "\\");
 	SYSTEMTIME time;
+	GetLocalTime(&time);
 	CoverTimeToUInt(time, m_RootDir.m_dwDate, m_RootDir.m_dwTime);
 	m_RootDir.m_Parent = NULL;
 
@@ -21,7 +22,7 @@ CVirtualDiskMng::CVirtualDiskMng()
 
 CVirtualDiskMng::~CVirtualDiskMng()
 {
-	m_RootDir.Release();
+	
 }
 
 int CVirtualDiskMng::CreateDir(char Path[])
@@ -69,19 +70,6 @@ int CVirtualDiskMng::CreateDir(char Path[])
 		p1 = strtok_s(NULL, "\\", &p2);
 	}
 
-	// for test
-	SNode<ITreeNode>* t = m_RootDir.m_Nodes.get_head(), *f = NULL;
-	for(t; t!=NULL; t =((CDirectoryNode*)(t->Value))->m_Nodes.get_head())
-	{
-		f = t;
-		for (t; t!= NULL; t = t->Next)
-		{
-			printf("test dir == %s\n", t->Value->m_szName);
-		}
-		t = f;
-	}
-	// end test
-
 	return 0;
 }
 
@@ -110,26 +98,13 @@ int CVirtualDiskMng::CreateFile(char szName[], char Path[], int nSize)
 
 	// 递归创建
 	ITreeNode* Node_Create = NULL;
-	Node_Create = CFileNode::create(EFT_DIR, szName, Node_Parent, nSize, m_Disk.GetData(EDDT_POS));
+	Node_Create = CFileNode::create(EFT_FILE, szName, Node_Parent, nSize, m_Disk.GetData(EDDT_POS) - nSize);
 	if(Node_Create == NULL)
 	{
 		return -1;
 	}
 
 	Node_Parent->InsertTree(Node_Create);
-
-	// for test
-	SNode<ITreeNode>* t = m_RootDir.m_Nodes.get_head(), *f = NULL;
-	for(t; t!=NULL; t =((CDirectoryNode*)(t->Value))->m_Nodes.get_head())
-	{
-		f = t;
-		for (t; t!= NULL; t = t->Next)
-		{
-			printf("test dir == %s\n", t->Value->m_szName);
-		}
-		t = f;
-	}
-	// end test
 
 	return 0;
 }
@@ -146,6 +121,9 @@ int CVirtualDiskMng::ListDir(char Path[], int nType)
 		szTmp = m_CurDir;
 	}
 	
+	CMyString szTmp1 = Path;
+	CoverToAbsolutePath(szTmp1);
+
 	ITreeNode *Node = GetNode(szTmp);
 	if(NULL == Node)
 	{
@@ -159,11 +137,12 @@ int CVirtualDiskMng::ListDir(char Path[], int nType)
 	{
 
 		SNode<ITreeNode>* t = Node->GetNodes()->get_head(), *f = NULL, *k = NULL;
-		CMyString szTmp1 = szTmp;
-		printf("%s 的目录\n", szTmp1);
+		
+		printf("%s 的目录\n", szTmp1.GetBuf());
 
 		Node->Print(1);
-		Node->Print(2);
+		if(Node->m_Parent != NULL)
+			Node->m_Parent->Print(2);
 
 		for (t; t!= NULL; t = t->Next)
 		{
@@ -174,11 +153,11 @@ int CVirtualDiskMng::ListDir(char Path[], int nType)
 	{
 
 		SNode<ITreeNode>* t = Node->GetNodes()->get_head(), *f = NULL, *k = NULL;
-		CMyString szTmp1 = szTmp;
-		printf("%s 的目录\n", szTmp1);
+		printf("%s 的目录\n", szTmp1.GetBuf());
 
 		Node->Print(1);
-		Node->Print(2);
+		if(Node->m_Parent != NULL)
+			Node->m_Parent->Print(2);
 
 		for (t; t!= NULL; t = t->Next)
 		{
@@ -261,9 +240,14 @@ int CVirtualDiskMng::RmDir(char Path[], int nType)
 		return -1;
 	}
 
+	if(!strcmp(Node->m_szName, "\\"))
+	{
+		return -1;
+	}
+
 	if(nType == 0)
 	{
-		if(NULL != Node->GetNodes())
+		if(NULL != Node->GetNodes()->get_head())
 		{
 			printf("目录不是空的。\n");
 			return -1;
@@ -339,13 +323,27 @@ ENUM_PATH_TYPE CVirtualDiskMng::JudgePath(char Path1[], char Path2[], SJudgePath
 	if(NULL != p1)
 	{
 		p2 = strstr(p1, ".");
-		strcpy_s(pData->Suffix1, p2);
+		if(NULL != p2)
+		{
+			strcpy_s(pData->Suffix1, p2);
+		}
+
+		nType1 = DIR_T;
+		//GetPathFromStr(Path1);
 	}
 	else
 	{
 
 		WIN32_FIND_DATA Find_Data;
 		HANDLE tmp_f;
+		int nLength = 0;
+
+		nLength = strlen(Path1);
+		if(Path1[nLength-1] == '\\')
+		{
+			Path1[nLength] = '*';
+			Path1[nLength+1] = '\0';
+		}
 
 		tmp_f = FindFirstFile(Path1, &Find_Data);
 		if(INVALID_HANDLE_VALUE == tmp_f)
@@ -358,9 +356,12 @@ ENUM_PATH_TYPE CVirtualDiskMng::JudgePath(char Path1[], char Path2[], SJudgePath
 		{
 			nType1 = DIR_T;
 			int nLength = strlen(Path1);
-			*(Path1+nLength) = '\\';
-			*(Path1+nLength+1) = '*';
-			*(Path1+nLength+2) = '\0';
+			if(Path1[nLength-1] != '*')
+			{
+				*(Path1+nLength) = '\\';
+				*(Path1+nLength+1) = '*';
+				*(Path1+nLength+2) = '\0';
+			}
 		}
 		else
 		{
@@ -375,8 +376,12 @@ ENUM_PATH_TYPE CVirtualDiskMng::JudgePath(char Path1[], char Path2[], SJudgePath
 	if(NULL != p3)
 	{
 		p4 = strstr(p3, ".");
-		strcpy_s(pData->Suffix2, p4);
+		if(NULL != p4)
+		{
+			strcpy_s(pData->Suffix2, p4);
+		}
 		GetPathFromStr(Path2);
+		nType2 = DIR_T;
 	}
 	else
 	{
@@ -427,7 +432,6 @@ ENUM_PATH_TYPE CVirtualDiskMng::JudgePath(char Path1[], char Path2[], SJudgePath
 		(NULL != p3 && NULL == p4) )		
 	{
 		eType = EPT_WILDCARD_NO_SUFFIX;
-
 	}
 	else if( (NULL != p1 && NULL != p2) &&
 		(NULL != p3 && NULL == p4) )
@@ -487,7 +491,7 @@ int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
 
 	// 读取文件 并 写入
 	WIN32_FIND_DATA Find_Data;
-	HANDLE h_File = FindFirstFile(Path1, &Find_Data);
+	HANDLE h_File = FindFirstFile(szBuff1, &Find_Data);
 
 	p1 = strtok_s(szBuff1, "?*", &p2);				// 截取出除通配符的部分
 	if(h_File == INVALID_HANDLE_VALUE)
@@ -519,6 +523,35 @@ int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
 			else
 			{
 
+				if(eType != EPT_SINGLE_FILE )
+				{
+					char c = '0';
+					CMyString szTmp2 = szBuff2;
+					szTmp2 += "\\";
+					szTmp2 += Find_Data.cFileName;
+					CMyString szTmp3 = szTmp2;
+					ITreeNode* Node = GetNode(szTmp2);
+					if(Node != NULL)
+					{
+						printf("有同名文件，是否覆盖？\n");
+						printf("Y/y OR N/n ？");
+						c = getchar();
+						if(c == 'Y' || c == 'y')
+						{
+							getchar();
+
+							DelFiles(const_cast<char *>(szTmp3.GetBuf()));
+						}
+						else
+						{
+							getchar();
+							printf("文件复制失败。\n");
+							FindClose(h_File);
+							return -1;
+						}
+					}
+				}
+
 				// 1, 内容写入磁盘
 				int readbytes = 0;
 				int nStartPost = m_Disk.GetData(EDDT_POS);
@@ -529,6 +562,7 @@ int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
 					if(m_Disk.WriteTo(szBuff, readbytes) < 0)
 					{
 						printf("磁盘空间不足。\n");
+						FindClose(h_File);
 						return -1;
 					}
 				}
@@ -537,7 +571,6 @@ int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
 				nEndPos = m_Disk.GetData(EDDT_POS);
 			
 				// 2, 在目录树中存储文件信息
-
 				if(eType != EPT_SINGLE_FILE)
 				{
 					CreateFile(Find_Data.cFileName, szBuff2, nEndPos - nStartPost);
@@ -564,6 +597,7 @@ int CVirtualDiskMng::DelFiles(char Path[], int nType)
 	char* p2 = NULL;
 
 	char szSuffix[MAX_SUFFIX_LENGTH] = {0};
+	char szBuff[MAX_PATH] = {0};
 
 	char* szWildCard[] = {"*", "?"};
 
@@ -574,6 +608,10 @@ int CVirtualDiskMng::DelFiles(char Path[], int nType)
 	};
 	int nType1 = 0, nType2 = 0;
 
+	if(NULL == Path)
+	{
+		return -1;
+	}
 
 	p1 = strstr(Path, szWildCard[0]);
 	if(NULL == p1)
@@ -583,9 +621,34 @@ int CVirtualDiskMng::DelFiles(char Path[], int nType)
 
 	if(NULL != p1)
 	{
-		p4 = strstr(p1 ".");
-		strcpy_s(szSuffix, p4);
+		p2 = strstr(p1, ".");
+		if(NULL != p2)
+		{
+			strcpy_s(szSuffix, p2);
+		}
+
 		GetPathFromStr(Path);
+
+		memcpy(szBuff, Path, MAX_PATH);
+		CMyString szTmp = Path;
+
+		ITreeNode* Node = GetNode(szTmp);
+		if(NULL == Node)
+		{
+			printf("指定路径不存在。\n");
+			return -1;
+		}
+
+		nType2 = DIR_T;
+
+		if(NULL != p2)
+		{
+			Node->ReleaseChild(nType, szSuffix);
+		}
+		else
+		{
+			Node->ReleaseChild(nType);
+		}
 	}
 	else
 	{
@@ -601,32 +664,32 @@ int CVirtualDiskMng::DelFiles(char Path[], int nType)
 			if (Node->m_eType == EFT_DIR)
 			{
 				nType2 = DIR_T;
+
+				Node->ReleaseChild(nType);
 			}
 			else
 			{
-				//printf("确定要删除吗？\n");
-				//printf("Y/y OR N/n？");
-				//char c = getchar();
-				//if(c == 'Y' || c == 'y')
-				//{
-
-				//}
-				//else
-				//{
-				//	return -1;
-				//}
-
 				nType2 = FILE_T;
 				int nPos = ((CFileNode*)Node)->m_nPlace;
 				int nSize = ((CFileNode*)Node)->m_nSize;
 
 				m_Disk.DelFile(nPos, nSize);
+
+				if(NULL != Node->m_Parent)
+				{
+					Node->m_Parent->GetNodes()->del(*Node);
+				}
+
+				Node->Release();
+
 				NoticeAllFileToChangeData(nPos, nSize);
+
+				return 0;
 			}
 		}
 	}
 
-	return 1;
+	return 0;
 }
 
 void CVirtualDiskMng::NoticeAllFileToChangeData(int nPos, int nSize)
@@ -634,11 +697,198 @@ void CVirtualDiskMng::NoticeAllFileToChangeData(int nPos, int nSize)
 	m_RootDir.UpdatePos(nPos, nSize);
 }
 
+int CVirtualDiskMng::CompareFile(char Path1[], char Path2[])
+{	
+	FILE* fp = NULL;
+	errno_t Ret_t = 0;
+	
+
+	enum {
+
+		etmp_b,
+
+		etmp_f
+	};
+
+	int nType1 = etmp_f;
+	int nType2 = etmp_f;
+
+	bool bSame = true;
+
+	CMyString szTmp = Path2;
+	ITreeNode* Node = GetNode(szTmp);
+	if(NULL == Node || Node->m_eType != EFT_FILE)
+	{
+		printf("系统找不到指定路径。\n");
+		return -1;
+	}
+	CFileNode* File = (CFileNode*)Node;
+
+	Ret_t = fopen_s(&fp, Path1, "rb");
+	if( Ret_t != 0)
+	{
+		printf("系统找不到指定路径。\n");
+		return -1;
+	}
+
+	char c1 = '0';
+	char c2 = '0';
+	int i = 0;
+	int nPos = File->m_nPlace;
+	bool bFinish1 = 0, bFinish2 = 0;
+	while(1)
+	{
+
+		if(!bFinish1)
+		{
+			if(!fread(&c1, 1, 1, fp))
+			{
+				bFinish1 = true;
+			}
+			if(c1 == '\0')
+			{
+				nType1 = etmp_b;
+			}
+		}
+
+		if(!bFinish2)
+		{
+			if(nPos - File->m_nPlace < File->m_nSize)
+			{
+				m_Disk.ReadFrom(&c2, nPos++, 1);
+			}
+			else
+			{
+				bFinish2 = true;
+			}
+
+			if(c2 == '\0')
+			{
+				nType2 = etmp_b;
+			}
+		}
+
+		if(c1 != c2)
+		{
+			bSame = false;
+		}
+
+		if(bSame)
+		{
+			i++;
+		}
+
+		if(bFinish1&bFinish2)
+		{
+			break;
+		}
+	}
+
+	if(bSame)
+	{
+		printf("内容比较一致\n");
+		return 0;
+	}
+
+	fseek(fp, i, SEEK_SET);
+	int nOutSize = 16;
+	int j = 0;
+	printf("%s ==>\n", Path1);
+	if(nType1 == etmp_b)
+	{
+		do
+		{
+			printf("0x%08x	", c1);
+			j++;
+			if(j >= 16)
+			{
+				break;
+			}
+		}while(fread(&c1, 1, 1, fp));
+	}
+	else
+	{
+		do
+		{
+			j++;
+			if(j >= 16)
+			{
+				break;
+			}
+			printf("%c", c1);
+		}while(fread(&c1, 1, 1, fp));
+	}
+
+	printf("\n");
+
+	j = 0;
+	printf("%s ==>\n", Path2);
+	if(nType2 == etmp_b)
+	{
+		while(!m_Disk.ReadFrom(&c2, File->m_nPlace+i, 1))	
+		{
+			i++;
+			j++;
+			if(j >= 16)
+			{
+				break;
+			}
+			printf("0x%08x	", c2);
+		}
+	}
+	else
+	{
+		while(!m_Disk.ReadFrom(&c2, File->m_nPlace+i, 1))
+		{
+			i++;
+			j++;
+			if(j >= 16)
+			{
+				break;
+			}
+			printf("%c", c2);
+		}
+	}
+
+	printf("\n");
+
+
+	fclose(fp);
+
+	return 0;
+}
+
 ITreeNode* CVirtualDiskMng::GetNode(CMyString &Path, bool bCreate)
 {
 	char szPath[MAX_PATH] = {0};
 
+	//char szBuff[MAX_PATH] = {0};
+
+	//// 截取文件名
+	//CMyString szTmp = Path;
+	//bool bPoint = false;
+
+	//GetFileNameFromStr(szBuff, const_cast<char *>(szTmp.GetBuf()));
+
+	//if(strcmp(szBuff, ".")&&strcmp(szBuff, ".."))
+	//{
+	//	bPoint = true;
+	//	GetPathFromStr(const_cast<char *>(szTmp.GetBuf()));
+	//}
+
+
 	CoverToAbsolutePath(Path);
+
+	////加上截取的文件名
+
+	//if(bPoint != true)
+	//{
+	//	szTmp += "\\";
+	//	szTmp += szBuff;
+	//}
+
+
+	//Path = szTmp;
 
 	//printf("%s\n", Path.GetBuf());
 
@@ -654,6 +904,11 @@ ITreeNode* CVirtualDiskMng::GetNode(CMyString &Path, bool bCreate)
 	}
 
 	p1 = strtok_s(const_cast<char *>(p), "\\", &p2);
+	if(p1 == NULL)
+	{
+		return &m_RootDir;
+	}	
+
 	SNode<ITreeNode> *Node_T = m_RootDir.m_Nodes.get_head();
 
 	ITreeNode *Node = NULL;
@@ -737,15 +992,23 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 {
 	CMyString szTmp;
 
-	const char* p = Path.GetBuf();
+	char* p = const_cast<char *>(Path.GetBuf());
 
 	int nLength = strlen(p);
 
 	char* p2 = NULL;
 	char* p1 = NULL;
 	const char* p3 = NULL;
-	
+	char* p6 = NULL;
+
+	// 判断是否有后缀
+	if( NULL != (p6 = HaveSuffix(p)) )
+	{
+		*p6 = '*';
+	}
+
 	p3 = strstr(p, ":");
+
 
 	if(NULL != p3)
 	{
@@ -766,6 +1029,19 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 		szTmp += p1;
 
 		p1 = strtok_s(NULL, ":.\\", &p2);
+	}
+
+	// 如果有后缀加上后缀
+	if(NULL != p6)
+	{
+		p6 = const_cast<char *>(szTmp.GetBuf());
+		for(int i=strlen(p6)-1; i>=0; i--)
+		{
+			if(p6[i] == '*')
+			{
+				p6[i] = '.';
+			}
+		}
 	}
 
 	//printf("%s\n", szTmp.GetBuf());
@@ -800,7 +1076,7 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 		char* p4 = const_cast<char *>(szTmp1.GetBuf());
 		char* p5 = const_cast<char *>(p);
 
-		if(*(p4+nLength-1) == '\\')
+		if( nLength > 3 && *(p4+nLength-1) == '\\')
 		{
 			*(p4+nLength-1) = '\0';
 		}

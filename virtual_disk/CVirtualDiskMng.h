@@ -5,11 +5,6 @@
 #include "file_dir_base.h"
 #include "mystring.h"
 
-//class ITreeNode;
-//class CDirectoryNode;
-//class CFileNode;
-
-//class CMyString;
 
 #define INIT_CUR_PATH "C:\\"
 #define MAX_SUFFIX_LENGTH	8				// 文件名后缀最长多少
@@ -95,11 +90,21 @@ public:
 	/************************************************************************/
 	void NoticeAllFileToChangeData(int nPos, int nSize);
 
+	/************************************************************************/
+	/*	@Func CompareFile()
+	/*						比较物理磁盘文件及虚拟磁盘文件
+	/*	@Para Path1			物理磁盘上的文件
+	/*	@Para Path2			虚拟磁盘上的文件
+	/************************************************************************/
+	int CompareFile(char Path1[], char Path2[]);
+
 	ITreeNode* GetNode(CMyString& Path, bool bCreate /*是否是创建文件或目录*/ = false);
 
 	int ResolvePath(char Path[], char* szNames[]);					// 解析路径
 
 	CMyString& CoverToAbsolutePath(CMyString& Path);					// 转成绝对路径
+
+	CVirtualDisk* GetDisk(){return &m_Disk;}
 
 	/************************************************************************/
 	/*  @Func PrintCurPath

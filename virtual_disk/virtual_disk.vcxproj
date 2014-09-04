@@ -72,9 +72,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command.h" />
+    <ClInclude Include="COrderPro.h" />
     <ClInclude Include="CVirtualDisk.h" />
     <ClInclude Include="CVirtualDiskMng.h" />
     <ClInclude Include="file_dir_base.h" />
@@ -85,6 +88,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="command.cpp" />
+    <ClCompile Include="COrderPro.cpp" />
     <ClCompile Include="CVirtualDisk.cpp" />
     <ClCompile Include="CVirtualDiskMng.cpp" />
     <ClCompile Include="file_dir_base.cpp" />

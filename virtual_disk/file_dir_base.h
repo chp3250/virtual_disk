@@ -70,6 +70,19 @@ public:
 	/************************************************************************/
 	virtual void UpdatePos(int nPos, int nSize) = 0;
 
+	/************************************************************************/
+	/*	@Func ReleaseChild
+	/*	@Para nType
+	/*				 0 删除本目录所有文件
+	/*				 1 递归删除本目录及子目录所有文件
+	/*	@Para szBuff  
+	/*				 != NULL 时 删除指定后缀文件
+	/************************************************************************/
+	virtual void ReleaseChild(int nType, char* szBuff = NULL) = 0;
+
+	virtual int GetPos() = 0;
+	virtual int GetSize() = 0;
+
 	virtual bool operator== (ITreeNode& Node);
 
 public:
@@ -120,6 +133,11 @@ public:
 
 	virtual void UpdatePos(int nPos, int nSize);
 
+	virtual void ReleaseChild(int nType, char* szBuff = NULL);
+
+	virtual int GetPos(){return 0;}
+	virtual int GetSize(){return 0;}
+
 	bool EmptyDir()
 	{
 		return m_Nodes.empty();
@@ -152,6 +170,11 @@ public:
 	virtual void ChangeData(DWORD dwDate = 0, DWORD dwTime = 0, ITreeNode* Parent = NULL, int nPos = 0, int nSize = 0);
 
 	virtual void UpdatePos(int nPos, int nSize);
+
+	virtual void ReleaseChild(int nType, char* szBuff = NULL) {};
+
+	virtual int GetPos(){ return m_nPlace; }
+	virtual int GetSize(){ return m_nSize; }
 
 public:
 	int m_nSize;	// 文件大小

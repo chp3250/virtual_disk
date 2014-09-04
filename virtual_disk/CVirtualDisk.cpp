@@ -37,6 +37,25 @@ int CVirtualDisk::WriteTo(char* szBuff, int nSize)
 	return 0;
 }
 
+int CVirtualDisk::ReadFrom(char* szBuff, int nPos, int nSize)
+{
+	if(nPos >= MAX_DISK_SIZE)
+	{
+		return -1;
+	}
+
+	if(nPos + nSize > MAX_DISK_SIZE)
+	{
+		nSize = MAX_DISK_SIZE - nPos;
+	}
+
+	char* p = m_szDiskBuf + nPos;
+
+	memcpy(szBuff, p, nSize);
+
+	return 0;
+}
+
 int CVirtualDisk::GetData(int nType)
 {
 	if(nType == 0)
@@ -95,7 +114,7 @@ int CVirtualDisk::DelFile(int nPos, int nSize)
 	}
 
 	memset(m_szDiskBuf+nPos, 0, nSize);
-	memcpy(m_szDiskBuf+nPos, m_szDiskBuf+m_nCurPos, (MAX_DISK_SIZE - m_nCurPos));
+	memcpy(m_szDiskBuf+nPos, m_szDiskBuf+nPos+nSize, (MAX_DISK_SIZE - nPos - nSize));
 
 	m_nCurPos -= nSize;
 
