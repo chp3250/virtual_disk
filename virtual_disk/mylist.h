@@ -11,7 +11,7 @@ struct SNode
 };
 
 template<class T>
-class CMyList
+class VIRTUALDISK_API CMyList
 {
 public:
 

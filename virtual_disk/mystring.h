@@ -1,7 +1,9 @@
 #ifndef __MYSTRING_H__
 #define __MYSTRING_H__
 
-class CMyString
+#include "globalbase.h"
+
+class VIRTUALDISK_API CMyString
 {
 public:
 	///////////////////////////////////////////////////

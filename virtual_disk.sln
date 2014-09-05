@@ -3,6 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "virtual_disk", "virtual_disk\virtual_disk.vcxproj", "{AB79B7E6-AE72-4972-8EE6-0DD792A8C74A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "virtualdisk", "virtualdisk\virtualdisk.vcxproj", "{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualDiskConsole", "VirtualDiskConsole\VirtualDiskConsole.vcxproj", "{550F608B-1CFA-42D6-B331-F35D19AD507D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA} = {9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +20,14 @@ Global
 		{AB79B7E6-AE72-4972-8EE6-0DD792A8C74A}.Debug|Win32.Build.0 = Debug|Win32
 		{AB79B7E6-AE72-4972-8EE6-0DD792A8C74A}.Release|Win32.ActiveCfg = Release|Win32
 		{AB79B7E6-AE72-4972-8EE6-0DD792A8C74A}.Release|Win32.Build.0 = Release|Win32
+		{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}.Debug|Win32.Build.0 = Debug|Win32
+		{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}.Release|Win32.ActiveCfg = Release|Win32
+		{9B2955E9-1BA6-432F-93A6-5F92AE9B5AEA}.Release|Win32.Build.0 = Release|Win32
+		{550F608B-1CFA-42D6-B331-F35D19AD507D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{550F608B-1CFA-42D6-B331-F35D19AD507D}.Debug|Win32.Build.0 = Debug|Win32
+		{550F608B-1CFA-42D6-B331-F35D19AD507D}.Release|Win32.ActiveCfg = Release|Win32
+		{550F608B-1CFA-42D6-B331-F35D19AD507D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -17,7 +17,7 @@ enum ENUM_DISK_DATA_TYPE
 	EDDT_POS,
 };
 
-class CVirtualDisk
+class VIRTUALDISK_API CVirtualDisk
 {
 public:
 		CVirtualDisk();

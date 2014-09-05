@@ -23,7 +23,7 @@ enum ENUM_FILE_TYPE
 	EFT_END
 };
 
-class ITreeNode
+class VIRTUALDISK_API ITreeNode
 {
 public:
 	ITreeNode(){ Clear(); }
@@ -106,7 +106,7 @@ protected:
 
 };
 
-class CDirectoryNode: public ITreeNode
+class VIRTUALDISK_API CDirectoryNode: public ITreeNode
 {
 public:
 	CDirectoryNode();
@@ -147,7 +147,7 @@ public:
 
 };
 
-class CFileNode: public ITreeNode
+class VIRTUALDISK_API CFileNode: public ITreeNode
 {
 public:
 	CFileNode();

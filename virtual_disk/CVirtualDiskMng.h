@@ -1,6 +1,7 @@
 #ifndef __CVIRTUALDISKMNG_H__
 #define __CVIRTUALDISKMNG_H__
 
+#include "globalBase.h"
 #include "CVirtualDisk.h"
 #include "file_dir_base.h"
 #include "mystring.h"
@@ -39,7 +40,7 @@ struct SJudgePath_Data
 	}
 };
 
-class CVirtualDiskMng
+class VIRTUALDISK_API CVirtualDiskMng
 {
 public:
 	CVirtualDiskMng();
