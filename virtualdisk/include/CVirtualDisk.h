@@ -9,6 +9,7 @@
 /************************************************************************/
 
 #include "globalbase.h"
+#include "IVirtualDiskProxy.h"
 
 const int MAX_DISK_SIZE = 1024*1024*10;				// 10M ¿Õ¼ä
 

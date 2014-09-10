@@ -24,6 +24,7 @@ public:
 	
 	const char* GetBuf() {return m_Buf;}
 	int Length() { return strlen(m_Buf); };
+	char Back() { return m_Buf[strlen(m_Buf)-1]; }
 
 private:
 	int AllockBuf(char* Str, bool bAdd = false/*是加到字符串尾部，还是覆盖*/);				// 抽出来的字符串构造主体语句

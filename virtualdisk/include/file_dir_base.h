@@ -12,6 +12,7 @@
 
 #include "mylist.h"
 #include "windows.h"
+#include "CFindResult.h"
 
 #define MAX_PATH 260
 //typedef unsigned int DWORD;
@@ -143,11 +144,12 @@ public:
 	
 	////////////////////////////////////  实现继承自接口IDirProxy的函数 /////////////////////////////////////
 	virtual const char* GetName() {return m_szName;};
-	virtual ETYPE  GetType() {return m_eType-1;};
+	virtual ETYPE  GetType() {return ETYPE(m_eType-1);};
 
 	//findstr:要查找的文件名(可能是目录名)，要支持通配符* ？
 	//bRecursion：是否递归查找
 	virtual IFindResult* Find(const char* findstr,bool bRecursion);
+	void RecursionFind(IFindResult *pFind);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -191,7 +193,7 @@ public:
 
 	////////////////////////////////////  实现继承自接口IFileProxy的函数 /////////////////////////////////////
 	virtual const char* GetName() {return m_szName;};
-	virtual ETYPE  GetType() {return m_eType-1;};
+	virtual ETYPE  GetType() {return ETYPE(m_eType-1);};
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public:

@@ -12,7 +12,7 @@ struct SNode
 };
 
 template<class T>
-class VIRTUALDISK_API CMyList
+class __declspec(dllexport) CMyList
 {
 public:
 

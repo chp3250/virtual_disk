@@ -8,13 +8,118 @@
 
 // for test
 #include "mystring.h"
-#include "mylist.h"
 #include "CVirtualDiskMng.h"
 // end test
 
 #define MAX_INPUT 1024
 
-VIRTUALDISK_API  CVirtualDiskMng CTmp;
+char* TranslateInput(char* str)
+{
+	const int MAX_PARA_COUNT = 2;
+	char* para[MAX_PARA_COUNT] = {"/s", "/ad"};
+	char* para_t[MAX_PARA_COUNT] = {"\\s", "\\ad"};
+
+	char* p1 = NULL;
+	char* p2 = NULL;
+
+	int nLength1 = 0;
+	int nLength2 = 0;
+	char c = ' ';
+
+	//1, 路径兼容  \ /
+	nLength1 = strlen(str);
+	for(int i=0; i<nLength1; i++)
+	{
+		if(str[i] == '/')
+		{
+			str[i] = '\\';
+		}
+	}
+
+	p1 = NULL;
+	p2 = NULL;
+	//2, 参数处理 /s /ad
+	for(int i=0; i<MAX_PARA_COUNT; i++)
+	{
+		p1 = strstr(str, para_t[i]);
+		while(NULL != p1)
+		{
+			nLength1 = strlen(para_t[i]);
+			if(p1[nLength1] != ' ' && p1[nLength1] != '\0')
+			{
+				p1 = strstr(p1+nLength1, para_t[i]);
+				continue;
+			}
+
+			for(int j=0; j<nLength1; j++)
+			{
+				p1[j] = ' ';
+			}
+
+			p2 = strstr(str, " ");
+			p2 += 1;
+			if(NULL == p2)
+			{
+				// 不可能
+			}
+			else
+			{
+				nLength2 = strlen(p2);
+				
+				for(int k=nLength2+1; k>=0; k--) // 加1 为了插入一空格
+				{
+					p2[k+nLength1+1] = p2[k];
+				}
+
+
+
+				for(int m=0; m<nLength1; m++)
+				{
+					p2[m] = para[i][m];
+				}
+
+				p2[nLength1] = ' '; 
+			}
+
+			p1 = NULL;
+			p2 = NULL;
+		}
+
+
+		nLength1 = 0;
+		nLength2 = 0;
+	}
+
+	//3, .. 和. 处理
+	p1 = NULL;
+	p2 = NULL;
+	nLength1 = strlen(str);
+	for(int i=0; i<nLength1; i++)
+	{
+		if(str[i] == '.')
+		{
+			if(i != nLength1-1 && (str[i+1] != '\\' && str[i+1] != '.'))
+			{
+				break;
+			}
+
+			if(i !=0 && str[i-1] != ' ')
+			{
+				// 插入一个空格
+				for(int j=nLength1; j>=i; j--)
+				{
+					str[j+1] = str[j];
+				}
+
+				str[i] = ' ';
+			}
+
+			break;
+		}
+	}
+
+	return str;
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -27,10 +132,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* p2 = NULL;
 	char* p3 = NULL;
 
+	//for test;
+	IVirtualDiskProxy* ITmp = GetVirtualDiskProxy();  
+
+	CVirtualDiskMng* CTmp = dynamic_cast<CVirtualDiskMng*>(ITmp);
+	if(NULL == CTmp)
+	{
+		printf("磁盘初始化出错。\n");
+		return -1;
+	}
+
 	while(nFinish != 1)
 	{
 
-		CTmp.PrintCurPath();
+		CTmp->PrintCurPath();
 
 		memset(szTmp, 0, sizeof(szTmp));
 
@@ -44,157 +159,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		fflush(stdin);
 
-		if(!strcmp(szTmp, "exit"))
+		TranslateInput(szTmp);
+		//printf("translated: == %s\n", szTmp);
+
+		if ( -2 == CTmp->ExecCommand(szTmp) )
 		{
 			break;
-		}
-
-		// for test
-		p1 = strtok_s(szTmp, " \0", &p2);
-		if(p1 == NULL)
-		{
-			continue;
-		}
-
-		if(!strcmp(p1, "mkdir"))
-		{
-			CTmp.CreateDir(p2);
-		}
-		else if(!strcmp(p1, "dir"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL == p1)
-			{
-				CTmp.ListDir(NULL);
-				continue;
-			}
-
-			if(!strcmp(p1, "/ad")) // 只列出子目录
-			{
-
-				p1 = strtok_s(NULL, " \0", &p2);
-				CTmp.ListDir(p1, 1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						CTmp.ListDir(p1, 1);
-				}
-			}
-			else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				CTmp.ListDir(p1, 2);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						CTmp.ListDir(p1, 2);
-				}
-			}
-			else
-			{
-				CTmp.ListDir(p1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						CTmp.ListDir(p1);
-				}
-			}
-
-		}
-		else if(!strcmp(p1, "cd"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL == p1)
-			{
-				CTmp.PrintCurPath(false);
-			}
-			else
-			{
-				CTmp.ChangeDir(p1);
-			}
-		}
-		else if(!strcmp(p1, "copy"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1 || NULL == p2)
-			{
-				continue;;
-			}
-			CTmp.CopyFiles(p1, p2);
-		}
-		else if(!strcmp(p1, "rmdir"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1)
-			{
-				continue;;
-			}
-
-			if(!strcmp(p1, "/s"))
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				CTmp.RmDir(p1, 1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						CTmp.RmDir(p1, 1);
-				}
-			}
-			else
-			{
-				CTmp.RmDir(p1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						CTmp.RmDir(p1);
-				}
-			}
-		}
-		else if(!strcmp(p1, "compare"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			CTmp.CompareFile(p1, p2);
-		}
-		else if(!strcmp(p1, "del"))
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1)
-			{
-				continue;;
-			}
-			if(!strcmp(p1, "/s"))
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				CTmp.DelFiles(p1, 1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						CTmp.DelFiles(p1, 1);
-				}
-			}
-			else
-			{
-				CTmp.DelFiles(p1);
-
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						CTmp.DelFiles(p1);
-				}
-			}
 		}
 
 		// end test

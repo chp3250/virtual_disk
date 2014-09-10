@@ -7,6 +7,8 @@
 #include "windows.h"
 #include "stdio.h"
 
+CVirtualDiskMng CTmp;
+
 CVirtualDiskMng::CVirtualDiskMng()
 {
 	Clear();
@@ -23,6 +25,173 @@ CVirtualDiskMng::CVirtualDiskMng()
 CVirtualDiskMng::~CVirtualDiskMng()
 {
 	
+}
+
+int CVirtualDiskMng::ExecCommand(const char* command) 
+{
+	char* szTmp = const_cast<char *>(command);
+	char* p1 = NULL;
+	char* p2 = NULL;
+	char* p3 = NULL;
+
+	if(!strcmp(szTmp, "exit"))
+	{
+		return -2;
+	}
+
+	// for test
+	p1 = strtok_s(szTmp, " \0", &p2);
+	if(p1 == NULL)
+	{
+		return 0;
+	}
+
+	if(!strcmp(p1, "mkdir"))
+	{
+		CreateDir(p2);
+	}
+	else if(!strcmp(p1, "dir"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		if(NULL == p1)
+		{
+			ListDir(NULL);
+			return 0;
+		}
+
+		if(!strcmp(p1, "/ad")) // 只列出子目录
+		{
+
+			p1 = strtok_s(NULL, " \0", &p2);
+			ListDir(p1, 1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if( NULL != p1) 
+					ListDir(p1, 1);
+			}
+		}
+		else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			ListDir(p1, 2);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if( NULL != p1) 
+					ListDir(p1, 2);
+			}
+		}
+		else
+		{
+			ListDir(p1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if( NULL != p1) 
+					ListDir(p1);
+			}
+		}
+
+	}
+	else if(!strcmp(p1, "cd"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		if(NULL == p1)
+		{
+			PrintCurPath(false);
+		}
+		else
+		{
+			ChangeDir(p1);
+		}
+	}
+	else if(!strcmp(p1, "copy"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		if(NULL ==p1 || NULL == p2)
+		{
+			return 0;;
+		}
+		CopyFiles(p1, p2);
+	}
+	else if(!strcmp(p1, "rmdir"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		if(NULL ==p1)
+		{
+			return 0;;
+		}
+
+		if(!strcmp(p1, "/s"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			RmDir(p1, 1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if(NULL != p1)
+					RmDir(p1, 1);
+			}
+		}
+		else
+		{
+			RmDir(p1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if(NULL != p1)
+					RmDir(p1);
+			}
+		}
+	}
+	else if(!strcmp(p1, "compare"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		CompareFile(p1, p2);
+	}
+	else if(!strcmp(p1, "del"))
+	{
+		p1 = strtok_s(NULL, " \0", &p2);
+		if(NULL ==p1)
+		{
+			return 0;;
+		}
+		if(!strcmp(p1, "/s"))
+		{
+			p1 = strtok_s(NULL, " \0", &p2);
+			DelFiles(p1, 1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if(NULL != p1)
+					DelFiles(p1, 1);
+			}
+		}
+		else
+		{
+			DelFiles(p1);
+
+			while(p1 != NULL)
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				if(NULL != p1)
+					DelFiles(p1);
+			}
+		}
+	}
+	else
+	{
+		printf("命令不存在!\n");
+	}
+
+	return 0;
 }
 
 int CVirtualDiskMng::CreateDir(char Path[])
@@ -167,7 +336,11 @@ int CVirtualDiskMng::ListDir(char Path[], int nType)
 	}
 	else if(nType == 2)
 	{
-		CMyString szTmp2 = "C:";
+		char szBuf[MAX_PATH] = {0};
+		memcpy(szBuf, szTmp.GetBuf(), MAX_PATH);
+		GetPathFromStr(szBuf);
+		CMyString szTmp2 = szBuf;	
+
 		Node->RecursionPrint(szTmp2);
 	}
 	// end test
@@ -491,7 +664,15 @@ int CVirtualDiskMng::CopyFiles(char Path1[], char Path2[])
 
 	// 读取文件 并 写入
 	WIN32_FIND_DATA Find_Data;
-	HANDLE h_File = FindFirstFile(szBuff1, &Find_Data);
+	HANDLE h_File = INVALID_HANDLE_VALUE;
+	if(eType != EPT_FILE_DIR)
+	{
+		h_File = FindFirstFile(szBuff1, &Find_Data);
+	}
+	else
+	{
+		h_File = FindFirstFile(Path1, &Find_Data);
+	}
 
 	p1 = strtok_s(szBuff1, "?*", &p2);				// 截取出除通配符的部分
 	if(h_File == INVALID_HANDLE_VALUE)
@@ -864,33 +1045,8 @@ ITreeNode* CVirtualDiskMng::GetNode(CMyString &Path, bool bCreate)
 
 	//char szBuff[MAX_PATH] = {0};
 
-	//// 截取文件名
-	//CMyString szTmp = Path;
-	//bool bPoint = false;
-
-	//GetFileNameFromStr(szBuff, const_cast<char *>(szTmp.GetBuf()));
-
-	//if(strcmp(szBuff, ".")&&strcmp(szBuff, ".."))
-	//{
-	//	bPoint = true;
-	//	GetPathFromStr(const_cast<char *>(szTmp.GetBuf()));
-	//}
-
 
 	CoverToAbsolutePath(Path);
-
-	////加上截取的文件名
-
-	//if(bPoint != true)
-	//{
-	//	szTmp += "\\";
-	//	szTmp += szBuff;
-	//}
-
-
-	//Path = szTmp;
-
-	//printf("%s\n", Path.GetBuf());
 
 	const char* p = Path.GetBuf();
 	int nLength = Path.Length();
@@ -1024,11 +1180,14 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 	{
 		//printf("%d:%s\n", i, p1);
 
-		szTmp += "\\";
-
 		szTmp += p1;
 
 		p1 = strtok_s(NULL, ":.\\", &p2);
+
+		if(p1 != NULL)
+		{
+			szTmp += "\\";
+		}
 	}
 
 	// 如果有后缀加上后缀
@@ -1061,7 +1220,7 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 		else
 		{
 			char* p4 = const_cast<char *>(Path.GetBuf());
-			*(p4+strlen(p4)-1) = '\0';
+			//*(p4+strlen(p4)-1) = '\0';
 
 			Path += szTmp;
 		}			
@@ -1098,6 +1257,11 @@ CMyString& CVirtualDiskMng::CoverToAbsolutePath(CMyString& Path)
 			}
 
 			p5 += 2;
+		}
+
+		if(szTmp1.Back() != '\\' && szTmp.Length() != 0)
+		{
+			szTmp1 += "\\";
 		}
 
 		Path = szTmp1;

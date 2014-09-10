@@ -4,8 +4,6 @@
 #include "mystring.h"
 #include "CVirtualDiskMng.h"
 
-VIRTUALDISK_API CVirtualDiskMng CTmp;
-
 ITreeNode::~ITreeNode()
 {
 	Clear();
@@ -269,20 +267,98 @@ void CDirectoryNode::ReleaseChild(int nType, char* szBuff)
 
 IFindResult* CDirectoryNode::Find(const char* findstr,bool bRecursion)
 {
-	if(NULL == findstr)
+	CMyString szTmp = const_cast<char *>(findstr);
+	CVirtualDiskMng* CTmp = NULL;
+	CTmp = static_cast<CVirtualDiskMng*>(GetVirtualDiskProxy());
+	if(NULL == CTmp)
 	{
 		return NULL;
 	}
 
-	CMyString szTmp = const_cast<char *>(findstr);
-	if(bRecursion)
+	if(findstr == NULL)
 	{
+		return NULL;
+	}
 
+	CMyString szTmp1 = const_cast<char *>(findstr);
+	CTmp->CoverToAbsolutePath(szTmp1);
+
+	ITreeNode *Node = CTmp->GetNode(szTmp);
+	if(NULL == Node)
+	{
+		printf("系统找不到指定路径\n");
+		return NULL;
+	}
+
+	CFindResult* Find_data = CFindResult::Create();
+
+	if(Node->m_eType == EFT_FILE)
+	{
+		CFileNode* pFile_Tmp = static_cast<CFileNode*>(Node);
+		if(pFile_Tmp)
+		{
+			Find_data->AddToTail(pFile_Tmp);
+			return Find_data;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	// for test
+
+	CDirectoryNode* pDir_Tmp = dynamic_cast<CDirectoryNode*>(Node);
+	if(NULL == pDir_Tmp)
+	{
+		return NULL;
+	}
+
+	if(!bRecursion)
+	{
+		Find_data->AddToTail(pDir_Tmp);
 	}
 	else
 	{
 
+		Find_data->AddToTail(pDir_Tmp);
+		RecursionFind(Find_data);
 	}
+
+	return Find_data;
+}
+
+void CDirectoryNode::RecursionFind(IFindResult *pFind)
+{
+	if(NULL == pFind)
+	{
+		return;
+	}
+
+
+	SNode<ITreeNode> *Node_t = m_Nodes.get_head();
+	CDirectoryNode* pTmp = NULL;
+	for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
+	{
+		if(Node_t->Value == NULL)
+			continue;
+
+		pTmp = dynamic_cast<CDirectoryNode*>(Node_t->Value);
+		if(pTmp == NULL)
+		{
+			continue;
+		}
+		else
+		{
+			CFindResult* Find_Tmp = static_cast<CFindResult*>(pFind);
+			if(NULL != Find_Tmp)
+			{
+				Find_Tmp->AddToTail(pTmp);
+				pTmp->RecursionFind(pFind);
+			}
+		}
+	}
+
 }
 
 CFileNode::CFileNode()
@@ -366,8 +442,11 @@ void CFileNode::Release(int nType)
 	if(nType != 2)
 	{
 
-		CTmp.GetDisk()->DelFile(m_nPlace, m_nSize);
-		CTmp.NoticeAllFileToChangeData(m_nPlace, m_nSize);
+		CVirtualDiskMng* CTmp = NULL;
+		CTmp = static_cast<CVirtualDiskMng*>(GetVirtualDiskProxy());
+
+		CTmp->GetDisk()->DelFile(m_nPlace, m_nSize);
+		CTmp->NoticeAllFileToChangeData(m_nPlace, m_nSize);
 
 		delete this;
 	}

@@ -73,7 +73,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CFindResult.h" />
+    <ClInclude Include="include\CFindResult.h" />
     <ClInclude Include="include\CVirtualDisk.h" />
     <ClInclude Include="include\CVirtualDiskMng.h" />
     <ClInclude Include="include\file_dir_base.h" />
@@ -87,6 +87,7 @@
     <ClInclude Include="include\virtualdisk.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CFindResult.cpp" />
     <ClCompile Include="CVirtualDisk.cpp" />
     <ClCompile Include="CVirtualDiskMng.cpp" />
     <ClCompile Include="file_dir_base.cpp" />

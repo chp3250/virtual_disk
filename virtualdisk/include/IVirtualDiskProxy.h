@@ -26,8 +26,8 @@ public:
 class IDirProxy:public IDiskObj
 {
 public:
-	//findstr:è¦æŸ¥æ‰¾çš„æ–‡ä»¶å(å¯èƒ½æ˜¯ç›®å½•å)ï¼Œè¦æ”¯æŒé€šé…ç¬¦* ï¼Ÿ
-	//bRecursionï¼šæ˜¯å¦é€’å½’æŸ¥æ‰¾
+	//findstr:Òª²éÕÒµÄÎÄ¼şÃû(¿ÉÄÜÊÇÄ¿Â¼Ãû)£¬ÒªÖ§³ÖÍ¨Åä·û* £¿
+	//bRecursion£ºÊÇ·ñµİ¹é²éÕÒ
 	virtual IFindResult* Find(const char* findstr,bool bRecursion)=0;
 
 };
@@ -48,7 +48,7 @@ public:
 class IVirtualDiskProxy
 {
 public:
-	virtual int ExecCommand(const char* command)=0; //è¿”å›1è¡¨ç¤ºæˆåŠŸï¼Œ0è¡¨ç¤ºå¤±è´¥
+	virtual int ExecCommand(const char* command)=0; //·µ»Ø1±íÊ¾³É¹¦£¬0±íÊ¾Ê§°Ü
 	virtual int GetVolumnCount()=0;
 	virtual IVolumnProxy* GetVolumnByIdx(int)=0;
 

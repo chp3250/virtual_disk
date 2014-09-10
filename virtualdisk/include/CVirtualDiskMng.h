@@ -9,6 +9,7 @@
 
 #define INIT_CUR_PATH "C:\\"
 #define MAX_SUFFIX_LENGTH	8				// 文件名后缀最长多少
+#define DISK_COUNT_INIT	1					// 磁盘数
 
 // copy时 有通配符，类型枚举表
 enum ENUM_PATH_TYPE
@@ -40,11 +41,26 @@ struct SJudgePath_Data
 	}
 };
 
-class VIRTUALDISK_API CVirtualDiskMng
+class VIRTUALDISK_API CVirtualDiskMng:public IVirtualDiskProxy, public IVolumnProxy
 {
 public:
 	CVirtualDiskMng();
 	~CVirtualDiskMng();
+
+
+	/************************************************************************/
+	// 继承的接口实现
+	//////////////////start //////////////////////////////////////////////////
+
+	virtual IDirProxy* GetRootDir() { return &m_RootDir; }
+
+
+	virtual int ExecCommand(const char* command); //返回1表示成功，0表示失败
+	virtual int GetVolumnCount() { return (int)(DISK_COUNT_INIT); }
+	virtual IVolumnProxy* GetVolumnByIdx(int nIndex) { return this; }
+
+
+	//////////////////end ///////////////////////////////////////////////////
 
 
 	int CreateDir(char Path[]);						// 创建目录
@@ -107,6 +123,8 @@ public:
 
 	CVirtualDisk* GetDisk(){return &m_Disk;}
 
+	CMyString& GetCurDir() { return m_CurDir; }
+
 	/************************************************************************/
 	/*  @Func PrintCurPath
 	/*	@Para bBegin			是否作为前导指示
@@ -134,8 +152,13 @@ private:
 		//m_CurDir = &m_RootDir;			// 初始当前目录为根目录
 		m_CurDir = INIT_CUR_PATH;
 	}
-
 };
 
-
+extern CVirtualDiskMng CTmp;
+extern "C" {
+inline VIRTUALDISK_API IVirtualDiskProxy*  GetVirtualDiskProxy()
+{
+	return &CTmp;
+}
+}
 #endif
