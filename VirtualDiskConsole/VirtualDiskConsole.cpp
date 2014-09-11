@@ -90,7 +90,7 @@ char* TranslateInput(char* str)
 		nLength2 = 0;
 	}
 
-	//3, .. 和. 处理
+	//3, 挨着命令的.. 和. 处理
 	p1 = NULL;
 	p2 = NULL;
 	nLength1 = strlen(str);
@@ -112,6 +112,41 @@ char* TranslateInput(char* str)
 				}
 
 				str[i] = ' ';
+			}
+
+			break;
+		}
+	}
+
+	//4, 挨着命令的 \处理
+	p1 = NULL;
+	p2 = NULL;
+	nLength1 = strlen(str);
+	for(int i=0; i<nLength1; i++)
+	{
+		if(str[i] != ' ')
+		{
+			for(int j=i; j<nLength1; j++)
+			{
+				// 先判空格 后判'\\'
+
+				if(str[j] == ' ')
+				{
+					break;
+				}
+
+				if(str[j] == '\\')
+				{
+					// 插入一个空格
+					for(int m=nLength1; m>=j; m--)
+					{
+						str[m+1] = str[m];
+					}
+
+					str[j] = ' ';
+
+					break;
+				}
 			}
 
 			break;
