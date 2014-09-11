@@ -123,6 +123,7 @@ int CVirtualDiskMng::ExecCommand(const char* command)
 		p1 = strtok_s(NULL, " \0", &p2);
 		if(NULL ==p1)
 		{
+			RmDir(NULL);
 			return 0;;
 		}
 
@@ -337,7 +338,7 @@ int CVirtualDiskMng::ListDir(char Path[], int nType)
 	else if(nType == 2)
 	{
 		char szBuf[MAX_PATH] = {0};
-		memcpy(szBuf, szTmp.GetBuf(), MAX_PATH);
+		memcpy(szBuf, szTmp1.GetBuf(), MAX_PATH);
 		GetPathFromStr(szBuf);
 		CMyString szTmp2 = szBuf;	
 
@@ -393,11 +394,17 @@ int CVirtualDiskMng::ChangeDir(char Path[])
 int CVirtualDiskMng::RmDir(char Path[], int nType)
 {
 	CMyString szTmp = Path;
+	bool bChange = false;
 
 	if(Path == NULL)			// É¾³ýµ±Ç°Â·¾¶
 	{
 		szTmp = m_CurDir;
-		ChangeDir("..");
+		bChange = true;
+	}
+
+	if(szTmp.Back() == '.')
+	{
+		bChange = true;
 	}
 
 	ITreeNode* Node = GetNode(szTmp);
@@ -447,6 +454,11 @@ int CVirtualDiskMng::RmDir(char Path[], int nType)
 	Node->m_Parent->GetNodes()->del(*Node);
 
 	Node->Release();
+
+	if(bChange)
+	{
+		ChangeDir("..");
+	}
 
 	return 0;
 }

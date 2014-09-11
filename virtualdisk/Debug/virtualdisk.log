@@ -1,4 +1,4 @@
-﻿Build started 2014/9/10 20:34:55.
+﻿Build started 2014/9/11 9:53:08.
      1>Project "D:\Work\virtual_disk\virtual_disk\virtualdisk\virtualdisk.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\virtualdisk.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -30,4 +30,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.32
+Time Elapsed 00:00:00.28
