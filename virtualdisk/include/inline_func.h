@@ -12,6 +12,8 @@
 #include "windows.h"
 #include "winbase.h"
 
+#define LOWER(x) (x >= 'A' && x <='Z' ? x + 32 : x)
+
 inline void CoverTimeToUInt(SYSTEMTIME& time, DWORD& dwDate, DWORD& dwTime)
 {
 	dwDate = time.wYear *10000 + time.wMonth * 100 + time.wDay;
@@ -81,5 +83,14 @@ extern char* GetFileNameFromStr(char* D_Str, char* S_Str);
 /*	@Return		char *  返回发下后缀的.的位置 =NULL则无后缀
 /************************************************************************/
 extern char* HaveSuffix(char* Str);
+
+/************************************************************************/
+/*	@Func StriStr()
+/*				   查询在源字符串中是否有目标子串---> 不区分大小写
+/*	@Para src	   查询字符串
+/*	@Para target   子串
+/************************************************************************/
+
+extern char *StriStr(const char *src, const char *target);
 
 #endif

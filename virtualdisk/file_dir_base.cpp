@@ -2,7 +2,7 @@
 #include "file_dir_base.h"
 #include "inline_func.h"
 #include "mystring.h"
-#include "CVirtualDiskMng.h"
+#include "CVirtualDiskProxy.h"
 
 ITreeNode::~ITreeNode()
 {
@@ -194,6 +194,11 @@ void CDirectoryNode::ChangeData(DWORD dwDate, DWORD dwTime, ITreeNode* Parent, i
 	{
 		m_Parent = Parent;
 	}
+
+	//if(nIndex > EVI_INVALID && nIndex < EVI_END)
+	//{
+	//	m_nVolumnIndex = nIndex;
+	//}
 }
 
 void CDirectoryNode::UpdatePos(int nPos, int nSize)
@@ -268,8 +273,13 @@ void CDirectoryNode::ReleaseChild(int nType, char* szBuff)
 IFindResult* CDirectoryNode::Find(const char* findstr,bool bRecursion)
 {
 	CMyString szTmp = const_cast<char *>(findstr);
-	CVirtualDiskMng* CTmp = NULL;
-	CTmp = static_cast<CVirtualDiskMng*>(GetVirtualDiskProxy());
+	CVolumn* CTmp = NULL;
+	if(!ValidIndex())
+	{
+		return NULL;
+	}
+
+	CTmp = static_cast<CVolumn*>(GetVirtualDiskProxy()->GetVolumnByIdx(m_nVolumnIndex));
 	if(NULL == CTmp)
 	{
 		return NULL;
@@ -442,8 +452,13 @@ void CFileNode::Release(int nType)
 	if(nType != 2)
 	{
 
-		CVirtualDiskMng* CTmp = NULL;
-		CTmp = static_cast<CVirtualDiskMng*>(GetVirtualDiskProxy());
+		CVolumn* CTmp = NULL;
+		if(!ValidIndex())
+		{
+			return;
+		}
+
+		CTmp = static_cast<CVolumn*>(GetVirtualDiskProxy()->GetVolumnByIdx(m_nVolumnIndex));
 
 		CTmp->GetDisk()->DelFile(m_nPlace, m_nSize);
 		CTmp->NoticeAllFileToChangeData(m_nPlace, m_nSize);
@@ -479,6 +494,11 @@ void CFileNode::ChangeData(DWORD dwDate, DWORD dwTime, ITreeNode* Parent, int nP
 	{
 		m_Parent = Parent;
 	}
+
+	//if(nIndex > EVI_INVALID && nIndex < EVI_END)
+	//{
+	//	m_nVolumnIndex = nIndex;
+	//}
 
 	if(nPos != 0)
 	{

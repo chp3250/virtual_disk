@@ -45,10 +45,13 @@
     <ClInclude Include="include\virtualdisk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CVirtualDiskMng.h">
+    <ClInclude Include="include\CFindResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CFindResult.h">
+    <ClInclude Include="include\CVolumn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CVirtualDiskProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,9 +60,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CVirtualDisk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CVirtualDiskMng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="file_dir_base.cpp">
@@ -72,6 +72,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CFindResult.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVolumn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVirtualDiskProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

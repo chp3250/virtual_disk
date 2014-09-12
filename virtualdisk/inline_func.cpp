@@ -67,3 +67,50 @@ char* HaveSuffix(char* Str)
 
 	return NULL;
 }
+
+char *StriStr(const char *src, const char *target)
+{
+	int m, t = 0, s = 0;
+	unsigned int i;
+	int *f;
+
+	m = strlen(target);
+	if (m == 0)
+	{
+		return (char *)src;
+	}
+	f = new int[m+1];
+
+	f[1] = 0;
+	for(s=1; s < m; s++)
+	{
+		while((t > 0) && (LOWER(target[s]) != LOWER(target[t]))) 
+			t = f[t];
+
+		if(LOWER(target[t]) == LOWER(target[s]))
+		{
+			f[s+1] = ++t;
+		}
+		else
+		{
+			f[s+1] = 0;
+		}
+	}
+
+	for(i=0, s=0;i<strlen(src);i++)
+	{
+		while((s>0) && (LOWER(src[i]) != LOWER(target[s])))
+			s = f[s];
+		if(LOWER(src[i]) == LOWER(target[s]))
+			s++;
+		if(s == m)
+		{
+			delete []f;
+			return ((char *)src+i-m+1);
+		}
+	}
+
+	delete []f;
+
+	return NULL;
+}

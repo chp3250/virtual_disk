@@ -26,6 +26,15 @@ enum ENUM_FILE_TYPE
 	EFT_END
 };
 
+enum ENUM_VOLUMN_INDEX
+{
+	EVI_INVALID = -1,
+	EVI_C		= 0,				// c盘
+	EVI_D,							// d盘
+
+	EVI_END
+};
+
 class VIRTUALDISK_API ITreeNode
 {
 public:
@@ -88,12 +97,37 @@ public:
 
 	virtual bool operator== (ITreeNode& Node);
 
+	/************************************************************************/
+	/*	@Func SetVolumn
+	/*						设置节点所在盘符
+	/************************************************************************/
+	void SetVolumn(int nIndex)
+	{
+		if(nIndex>EVI_INVALID && nIndex < EVI_END)
+		{
+			m_nVolumnIndex = nIndex;
+		}
+	}
+
+	bool ValidIndex()
+	{
+		if(m_nVolumnIndex>EVI_INVALID && m_nVolumnIndex < EVI_END)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 public:
 	ENUM_FILE_TYPE m_eType;		    // 树节点类型
 	DWORD m_dwDate;					// 创建日期		
 	DWORD m_dwTime;					// 创建时间
 	char m_szName[MAX_PATH];		// 名称
 	ITreeNode *m_Parent;			// 父节点地址
+	int m_nVolumnIndex;				// 所在盘符索引
 
 protected:
 	virtual void Clear()
@@ -105,6 +139,8 @@ protected:
 		memset(m_szName, 0, sizeof(m_szName));
 
 		m_Parent = NULL;
+		
+		m_nVolumnIndex = EVI_INVALID;
 	}
 
 };

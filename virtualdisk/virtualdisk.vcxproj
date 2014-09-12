@@ -75,7 +75,8 @@
   <ItemGroup>
     <ClInclude Include="include\CFindResult.h" />
     <ClInclude Include="include\CVirtualDisk.h" />
-    <ClInclude Include="include\CVirtualDiskMng.h" />
+    <ClInclude Include="include\CVirtualDiskProxy.h" />
+    <ClInclude Include="include\CVolumn.h" />
     <ClInclude Include="include\file_dir_base.h" />
     <ClInclude Include="include\globalBase.h" />
     <ClInclude Include="include\inline_func.h" />
@@ -89,7 +90,8 @@
   <ItemGroup>
     <ClCompile Include="CFindResult.cpp" />
     <ClCompile Include="CVirtualDisk.cpp" />
-    <ClCompile Include="CVirtualDiskMng.cpp" />
+    <ClCompile Include="CVirtualDiskProxy.cpp" />
+    <ClCompile Include="CVolumn.cpp" />
     <ClCompile Include="file_dir_base.cpp" />
     <ClCompile Include="inline_func.cpp" />
     <ClCompile Include="mystring.cpp" />

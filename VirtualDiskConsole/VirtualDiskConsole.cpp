@@ -8,7 +8,7 @@
 
 // for test
 #include "mystring.h"
-#include "CVirtualDiskMng.h"
+#include "CVirtualDiskProxy.h"
 // end test
 
 #define MAX_INPUT 1024
@@ -169,22 +169,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//for test;
 	IVirtualDiskProxy* ITmp = GetVirtualDiskProxy();  
-
-	CVirtualDiskMng* CTmp = dynamic_cast<CVirtualDiskMng*>(ITmp);
-	if(NULL == CTmp)
-	{
-		printf("´ÅÅÌ³õÊ¼»¯³ö´í¡£\n");
-		return -1;
-	}
+	printf("%s\\>", DRIVE_LETTER_ZERO);
 
 	while(nFinish != 1)
 	{
-
-		CTmp->PrintCurPath();
-
 		memset(szTmp, 0, sizeof(szTmp));
 
-		//scanf_s("%s", szTmp);
 		fgets(szTmp, MAX_INPUT-1, stdin);
 
 		nFinish = nTmp;
@@ -197,7 +187,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		TranslateInput(szTmp);
 		//printf("translated: == %s\n", szTmp);
 
-		if ( -2 == CTmp->ExecCommand(szTmp) )
+		if ( -2 == ITmp->ExecCommand(szTmp) )
 		{
 			break;
 		}
