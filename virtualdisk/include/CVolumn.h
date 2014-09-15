@@ -66,7 +66,7 @@ public:
 	/*  @Func ListDir
 	/*			列出目标路径下的文件与目录
 	/*	@Para Path							路径
-	/*	@Para int nType						0, 普通无参数 1, 参数/ad 2, 参数/s
+	/*	@Para int nType						0, 普通无参数 1, 参数/ad 2, 参数/s 3, /ad/s
 	/************************************************************************/
 	int ListDir(char Path[], int nType/*是否递归列出所有d*/= 0);
 

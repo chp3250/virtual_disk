@@ -51,7 +51,7 @@ public:
 	/* @Para nType		1, 是自己打印自己 2, 是子目录打印自己 3，父目录打印自己 
 	/************************************************************************/
 	virtual void Print(int nType = 0) = 0;								// 打印节点信息
-	virtual int RecursionPrint(CMyString& szTmp) = 0;									// 递归打印
+	virtual int RecursionPrint(CMyString& szTmp, bool bNoFile = false) = 0;									// 递归打印
 
 
 	/************************************************************************/
@@ -164,7 +164,7 @@ public:
 	virtual CMyList<ITreeNode>* GetNodes() { return &m_Nodes; }
 
 	virtual void Print(int nType = 0);
-	virtual int RecursionPrint(CMyString& szTmp);		
+	virtual int RecursionPrint(CMyString& szTmp, bool bNoFile = false);		
 
 	virtual void Release(int nType = 0);											// 释放
 
@@ -214,7 +214,7 @@ public:
 	virtual int InsertTree(ITreeNode* Node) { return 0; }
 	virtual CMyList<ITreeNode>* GetNodes() { return NULL; }
 	virtual void Print(int nType = 0);
-	virtual int RecursionPrint(CMyString& szTmp);
+	virtual int RecursionPrint(CMyString& szTmp, bool bNoFile = false);
 
 	virtual void Release(int nType = 0);											// 释放
 

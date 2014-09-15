@@ -22,6 +22,8 @@ CVirtualDiskProxy::~CVirtualDiskProxy()
 
 int CVirtualDiskProxy::ExecCommand(const char* command)
 {
+	int nRet = 0;
+
 	if(StriStr(command, "c:"))
 	{
 		SetVolumn(EVI_C);
@@ -32,12 +34,12 @@ int CVirtualDiskProxy::ExecCommand(const char* command)
 	}
 	else
 	{
-		m_Volumn[m_nCurVolumn].ExecCommand(command);
+		 nRet = m_Volumn[m_nCurVolumn].ExecCommand(command);
 	}
 
 	PrintCurPath();
 
-	return 1;
+	return nRet;
 }
 
 void CVirtualDiskProxy::PrintCurPath(bool bBegin/*是否作为前导指示*/)

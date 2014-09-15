@@ -99,6 +99,19 @@ int CVolumn::ExecCommand(const char* command)
 						ListDir(p1, 2);
 				}
 			}
+			else if(!strcmp(p1, "/s/ad") || !strcmp(p1, "/ad/s"))
+			{
+				p1 = strtok_s(NULL, " \0", &p2);
+				ListDir(p1, 3);
+
+				while(p1 != NULL)
+				{
+
+					p1 = strtok_s(NULL, " \0", &p2);
+					if( NULL != p1) 
+						ListDir(p1, 3);
+				}
+			}
 			else
 			{
 				ListDir(p1);
@@ -517,6 +530,15 @@ int CVolumn::ListDir(char Path[], int nType)
 		CMyString szTmp2 = szBuf;	
 
 		Node->RecursionPrint(szTmp2);
+	}
+	else if(nType == 3)
+	{
+		char szBuf[MAX_PATH] = {0};
+		memcpy(szBuf, szTmp1.GetBuf(), MAX_PATH);
+		GetPathFromStr(szBuf);
+		CMyString szTmp2 = szBuf;	
+
+		Node->RecursionPrint(szTmp2, true);
 	}
 	// end test
 

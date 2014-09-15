@@ -100,7 +100,7 @@ void CDirectoryNode::Print(int nType)
 	}
 }
 
-int CDirectoryNode::RecursionPrint(CMyString& szTmp)
+int CDirectoryNode::RecursionPrint(CMyString& szTmp, bool bNoFile)
 {
 	CMyString szTmp1 = szTmp;
 	if(m_szName[0] != '\\')
@@ -133,13 +133,18 @@ int CDirectoryNode::RecursionPrint(CMyString& szTmp)
 			if( NULL == Node_t->Value)
 				continue;
 
+			if(bNoFile && Node_t->Value->m_eType == EFT_FILE)
+			{
+				continue;;
+			}
+
 			Node_t->Value->Print(0);
 		}
 
 		Node_t = m_Nodes.get_head();
 		for(Node_t; Node_t!=NULL; Node_t = Node_t->Next)
 		{
-			Node_t->Value->RecursionPrint(szTmp1);
+			Node_t->Value->RecursionPrint(szTmp1, bNoFile);
 		}
 	}
 
@@ -467,7 +472,7 @@ void CFileNode::Release(int nType)
 	}
 }
 
-int CFileNode::RecursionPrint(CMyString& szTmp)
+int CFileNode::RecursionPrint(CMyString& szTmp, bool bNoFile)
 {
 	//CMyString szTmp1 = szTmp;
 	//szTmp1 += "\\";

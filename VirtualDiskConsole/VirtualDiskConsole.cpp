@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "vld.h"
 #include <stdlib.h>
 #include <iostream>
 #include <string>
@@ -15,9 +16,9 @@
 
 char* TranslateInput(char* str)
 {
-	const int MAX_PARA_COUNT = 2;
-	char* para[MAX_PARA_COUNT] = {"/s", "/ad"};
-	char* para_t[MAX_PARA_COUNT] = {"\\s", "\\ad"};
+	const int MAX_PARA_COUNT = 4;
+	char* para[MAX_PARA_COUNT] = {"/ad/s", "/s/ad", "/s", "/ad"};
+	char* para_t[MAX_PARA_COUNT] = {"\\ad\\s", "\\s\\ad", "\\s", "\\ad"};
 
 	char* p1 = NULL;
 	char* p2 = NULL;
