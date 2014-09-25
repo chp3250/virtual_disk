@@ -6,6 +6,7 @@
 #include "io.h"
 #include "windows.h"
 #include "stdio.h"
+#include "CCmd.h"
 
 CVolumn::CVolumn()
 {
@@ -32,196 +33,200 @@ int CVolumn::ExecCommand(const char* command)
 	char* p3 = NULL;
 	int nRet = 0;
 
-	if(!strcmp(szTmp, "exit"))
-	{
-		return -2;
-	}
+	CCmd* Cmd = new CCmdProxy(szTmp, this);
+	nRet = Cmd->Exec();
+	delete Cmd;
 
-	char* Para = {",mkdir,dir,cd,copy,rmdir,compare,del,"};		// 命令集合
+	//if(!strcmp(szTmp, "exit"))
+	//{
+	//	return -2;
+	//}
 
-	// for test
-	p1 = strtok_s(szTmp, " \0", &p2);
+	//char* Para = {",mkdir,dir,cd,copy,rmdir,compare,del,"};		// 命令集合
 
-	if(p1 == NULL)
-	{
-		return 0;
-	}
+	//// for test
+	//p1 = strtok_s(szTmp, " \0", &p2);
 
-	CMyString szTmp1 = ",";
-	szTmp1 += p1;
-	szTmp1 += ",";
-	p1 = StriStr(Para, szTmp1.GetBuf());
-	if(p1 == NULL)
-	{
-		printf("命令不存在\n");
-		return -1;
-	}
+	//if(p1 == NULL)
+	//{
+	//	return 0;
+	//}
 
-	int nIndex = (int)(p1 - Para);
-	switch(nIndex) {
-	case 0:
-		{
-			nRet = CreateDir(p2);
-		}
-		break;
-	case 6:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL == p1)
-			{
-				nRet = ListDir(NULL);
-				return 0;
-			}
+	//CMyString szTmp1 = ",";
+	//szTmp1 += p1;
+	//szTmp1 += ",";
+	//p1 = StriStr(Para, szTmp1.GetBuf());
+	//if(p1 == NULL)
+	//{
+	//	printf("命令不存在\n");
+	//	return -1;
+	//}
 
-			if(!strcmp(p1, "/ad")) // 只列出子目录
-			{
+	//int nIndex = (int)(p1 - Para);
+	//switch(nIndex) {
+	//case 0:
+	//	{
+	//		nRet = CreateDir(p2);
+	//	}
+	//	break;
+	//case 6:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		if(NULL == p1)
+	//		{
+	//			nRet = ListDir(NULL);
+	//			return 0;
+	//		}
 
-				p1 = strtok_s(NULL, " \0", &p2);
-				nRet = ListDir(p1, 1);
+	//		if(!strcmp(p1, "/ad")) // 只列出子目录
+	//		{
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						nRet = ListDir(p1, 1);
-				}
-			}
-			else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				nRet = ListDir(p1, 2);
+	//			p1 = strtok_s(NULL, " \0", &p2);
+	//			nRet = ListDir(p1, 1);
 
-				while(p1 != NULL)
-				{
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if( NULL != p1) 
+	//					nRet = ListDir(p1, 1);
+	//			}
+	//		}
+	//		else if(!strcmp(p1, "/s")) // 输出目录及子目录下的所有文件
+	//		{
+	//			p1 = strtok_s(NULL, " \0", &p2);
+	//			nRet = ListDir(p1, 2);
 
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						nRet = ListDir(p1, 2);
-				}
-			}
-			else if(!strcmp(p1, "/s/ad") || !strcmp(p1, "/ad/s"))
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				nRet = ListDir(p1, 3);
+	//			while(p1 != NULL)
+	//			{
 
-				while(p1 != NULL)
-				{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if( NULL != p1) 
+	//					nRet = ListDir(p1, 2);
+	//			}
+	//		}
+	//		else if(!strcmp(p1, "/s/ad") || !strcmp(p1, "/ad/s"))
+	//		{
+	//			p1 = strtok_s(NULL, " \0", &p2);
+	//			nRet = ListDir(p1, 3);
 
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						nRet = ListDir(p1, 3);
-				}
-			}
-			else
-			{
-				nRet = ListDir(p1);
+	//			while(p1 != NULL)
+	//			{
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if( NULL != p1) 
-						nRet = ListDir(p1);
-				}
-			}
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if( NULL != p1) 
+	//					nRet = ListDir(p1, 3);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			nRet = ListDir(p1);
 
-		}
-		break;
-	case 10:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL == p1)
-			{
-				PrintCurPath(false);
-			}
-			else
-			{
-				nRet = ChangeDir(p1);
-			}
-		}
-		break;
-	case 13:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1 || NULL == p2)
-			{
-				return 0;;
-			}
-			nRet = CopyFiles(p1, p2);
-		}
-		break;
-	case 18:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1)
-			{
-				nRet = RmDir(NULL);
-				return 0;;
-			}
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if( NULL != p1) 
+	//					nRet = ListDir(p1);
+	//			}
+	//		}
 
-			if(!strcmp(p1, "/s"))
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				nRet = RmDir(p1, 1);
+	//	}
+	//	break;
+	//case 10:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		if(NULL == p1)
+	//		{
+	//			PrintCurPath(false);
+	//		}
+	//		else
+	//		{
+	//			nRet = ChangeDir(p1);
+	//		}
+	//	}
+	//	break;
+	//case 13:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		if(NULL ==p1 || NULL == p2)
+	//		{
+	//			return 0;;
+	//		}
+	//		nRet = CopyFiles(p1, p2);
+	//	}
+	//	break;
+	//case 18:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		if(NULL ==p1)
+	//		{
+	//			nRet = RmDir(NULL);
+	//			return 0;;
+	//		}
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						nRet = RmDir(p1, 1);
-				}
-			}
-			else
-			{
-				nRet = RmDir(p1);
+	//		if(!strcmp(p1, "/s"))
+	//		{
+	//			p1 = strtok_s(NULL, " \0", &p2);
+	//			nRet = RmDir(p1, 1);
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						nRet = RmDir(p1);
-				}
-			}
-		}
-		break;
-	case 24:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			nRet = CompareFile(p1, p2);
-		}
-		break;
-	case 32:
-		{
-			p1 = strtok_s(NULL, " \0", &p2);
-			if(NULL ==p1)
-			{
-				return 0;;
-			}
-			if(!strcmp(p1, "/s"))
-			{
-				p1 = strtok_s(NULL, " \0", &p2);
-				nRet = DelFiles(p1, 1);
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if(NULL != p1)
+	//					nRet = RmDir(p1, 1);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			nRet = RmDir(p1);
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						nRet = DelFiles(p1, 1);
-				}
-			}
-			else
-			{
-				nRet = DelFiles(p1);
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if(NULL != p1)
+	//					nRet = RmDir(p1);
+	//			}
+	//		}
+	//	}
+	//	break;
+	//case 24:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		nRet = CompareFile(p1, p2);
+	//	}
+	//	break;
+	//case 32:
+	//	{
+	//		p1 = strtok_s(NULL, " \0", &p2);
+	//		if(NULL ==p1)
+	//		{
+	//			return 0;;
+	//		}
+	//		if(!strcmp(p1, "/s"))
+	//		{
+	//			p1 = strtok_s(NULL, " \0", &p2);
+	//			nRet = DelFiles(p1, 1);
 
-				while(p1 != NULL)
-				{
-					p1 = strtok_s(NULL, " \0", &p2);
-					if(NULL != p1)
-						nRet = DelFiles(p1);
-				}
-			}
-		}
-		break;
-	}
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if(NULL != p1)
+	//					nRet = DelFiles(p1, 1);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			nRet = DelFiles(p1);
+
+	//			while(p1 != NULL)
+	//			{
+	//				p1 = strtok_s(NULL, " \0", &p2);
+	//				if(NULL != p1)
+	//					nRet = DelFiles(p1);
+	//			}
+	//		}
+	//	}
+	//	break;
+	//}
 
 	return nRet;
 }
@@ -1136,6 +1141,7 @@ int CVolumn::CompareFile(char Path1[], char Path2[])
 	if(bSame)
 	{
 		printf("内容比较一致\n");
+		fclose(fp);
 		return 0;
 	}
 

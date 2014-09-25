@@ -50,6 +50,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;VIRTUALDISK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,6 +74,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\CCmd.h" />
     <ClInclude Include="include\CFindResult.h" />
     <ClInclude Include="include\CVirtualDisk.h" />
     <ClInclude Include="include\CVirtualDiskProxy.h" />
@@ -88,6 +90,7 @@
     <ClInclude Include="include\virtualdisk.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCmd.cpp" />
     <ClCompile Include="CFindResult.cpp" />
     <ClCompile Include="CVirtualDisk.cpp" />
     <ClCompile Include="CVirtualDiskProxy.cpp" />

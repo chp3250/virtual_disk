@@ -18,10 +18,10 @@ public:
 
 	//////////////////////////////////////////////////
 	// ÷ÿ‘ÿ∑˚∫≈
-	CMyString operator +=(char* Str);		
-	CMyString operator +=(CMyString& Str);	
-	CMyString operator =(char* Str);
-	CMyString operator =(CMyString& Str);
+	CMyString& operator +=(char* Str);		
+	CMyString& operator +=(CMyString& Str);	
+	CMyString& operator =(char* Str);
+	CMyString& operator =(CMyString& Str);
 	
 	bool operator == (char* Str);
 	bool operator == (CMyString& Str);

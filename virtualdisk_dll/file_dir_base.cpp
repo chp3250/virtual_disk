@@ -153,8 +153,6 @@ int CDirectoryNode::RecursionPrint(CMyString& szTmp, bool bNoFile)
 
 void CDirectoryNode::Release(int nType)
 {
-	if(nType == 1)
-		return;
 
 	if(m_Nodes.get_head() == NULL)
 	{

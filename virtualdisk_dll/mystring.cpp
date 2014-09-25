@@ -74,7 +74,7 @@ CMyString::~CMyString()
 	Clear();
 }
 
-CMyString CMyString::operator +=(char* Str)
+CMyString& CMyString::operator +=(char* Str)
 {
 	if( NULL == Str )
 	{
@@ -86,7 +86,7 @@ CMyString CMyString::operator +=(char* Str)
 	return *this;
 }
 
-CMyString CMyString::operator +=(CMyString& Str)
+CMyString& CMyString::operator +=(CMyString& Str)
 {
 
 	AllockBuf(const_cast<char *>(Str.GetBuf()), true);
@@ -94,7 +94,7 @@ CMyString CMyString::operator +=(CMyString& Str)
 	return *this;
 }
 
-CMyString CMyString::operator =(char* Str)
+CMyString& CMyString::operator =(char* Str)
 {
 	if( NULL == Str )
 	{
@@ -107,7 +107,7 @@ CMyString CMyString::operator =(char* Str)
 }
 
 
-CMyString CMyString::operator =(CMyString& Str)
+CMyString& CMyString::operator =(CMyString& Str)
 {
 
 	AllockBuf(const_cast<char *>(Str.GetBuf()));

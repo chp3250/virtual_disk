@@ -31,6 +31,7 @@ public:
 	bool empty();
 	void clear();
 	bool erase(SNode<T>* pNode);
+	T* GetValueByIndex(int nIndex);
 
 private:
 	SNode<T>* create_node(T& Value);
@@ -147,7 +148,14 @@ bool CMyList<T>::del(T& Value)
 		}
 	}
 
-	return true;
+	if(it == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 template<class T>
@@ -157,7 +165,7 @@ SNode<T>* CMyList<T>::search(T& Value)
 	SNode<T>* it = m_Head;
 	if(it == NULL)
 	{
-		return false;
+		return NULL;
 	}
 
 	for(it; it != NULL; it=it->Next)
@@ -168,6 +176,8 @@ SNode<T>* CMyList<T>::search(T& Value)
 			return it;		
 		}
 	}
+
+	return NULL;
 }
 
 template<class T>
@@ -231,6 +241,26 @@ bool CMyList<T>::erase(SNode<T>* pNode)
 	}
 
 	return true;
+}
+
+template<class T>
+T* CMyList<T>::GetValueByIndex(int nIndex)
+{
+	SNode<T>* it = m_Head;
+	if(NULL == it)
+	{
+		return NULL;
+	}
+
+	for(int i=0; i<nIndex && it != NULL; i++)
+	{
+		it = it->Next;
+	}
+
+	if(NULL != it)
+		return it->Value;
+	else
+		return NULL;
 }
 
 #endif
